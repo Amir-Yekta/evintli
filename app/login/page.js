@@ -1,34 +1,40 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
       body: JSON.stringify(form),
     });
 
     const data = await res.json();
-    if (!res.ok) return setError(data.error || 'Something went wrong');
+    if (!res.ok) return setError(data.error || "Something went wrong");
 
     // You can store the token in cookies or localStorage here
     // localStorage.setItem('token', data.token);
-    router.push('/');
+    router.push("/home");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-2xl text-black font-bold mb-6 text-center">Login to your account</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md"
+      >
+        <h1 className="text-2xl text-black font-bold mb-6 text-center">
+          Login to your account
+        </h1>
         <input
           name="email"
           placeholder="Email"
@@ -45,9 +51,14 @@ export default function LoginPage() {
           className="input placeholder-gray-500 text-black"
         />
         {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
-        <button className="bg-blue-600 text-white py-2 rounded w-full font-semibold">Login</button>
+        <button className="bg-blue-600 text-white py-2 rounded w-full font-semibold">
+          Login
+        </button>
         <p className="text-center text-black text-sm mt-4">
-          Don’t have an account? <a href="/signup" className="text-blue-600 font-medium">Sign-up</a>
+          Don’t have an account?{" "}
+          <a href="/signup" className="text-blue-600 font-medium">
+            Sign-up
+          </a>
         </p>
       </form>
     </div>
