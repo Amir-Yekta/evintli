@@ -18,20 +18,20 @@ function Listing({
   staff,
 }) {
   return (
-    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-3 md:grid-cols-1 lg:grid-cols-2">
       <Image
         src={url}
         alt={title}
         className="w-full h-48 object-cover rounded"
-        height={200}
+        height={300}
         width={300}
-        priority={true}
+        // priority={true}
       />
       {/* Replace this with dynamic listing cards later */}
       <div className="p-3 bg-white rounded shadow">
         <h3 className="text-lg font-bold">{title}</h3>
-        <p className=" text-gray-600">
-          ${price.min} - ${price.max}
+        <p className=" text-gray-800">
+          ${price.min.toLocaleString()} - ${price.max.toLocaleString()}
         </p>
         <div>
           <p className="flex gap-5  text-sm text-gray-800">
@@ -46,17 +46,17 @@ function Listing({
         </div>
 
         <div>
-          <p className="flex text-sm text-gray-600">
+          <p className="flex gap-5 text-sm text-gray-600">
             <IoPersonAddOutline /> {capacity}
           </p>
 
-          <p className="flex text-sm text-gray-600">
+          <p className="flex gap-5 text-sm text-gray-600">
             <FaPeopleRoof /> {staff.min} - {staff.max}
           </p>
         </div>
 
         <p className="text-sm text-gray-600">
-          {description.split(" ").slice(0, 10).join(" ")}...{" "}
+          {description.split(" ").slice(0, 5).join(" ")}...{" "}
           <span className="underline font-bold">more</span>
         </p>
       </div>
