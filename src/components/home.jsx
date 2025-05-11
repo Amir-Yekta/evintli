@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Image } from 'astro:assets';
+import profilePng from '../../public/assets/profile.png';
 import Listing from './listing';
 // import { FaBirthdayCake } from 'react-icons/fa';
 import { IoMdNotificationsOutline } from 'react-icons/io';
@@ -148,8 +148,8 @@ export default function HomePage() {
             Add Listing
           </button>
           <IoMdNotificationsOutline className='text-4xl' />
-          <Image
-            src='/assets/profile.png'
+          <img
+            src={profilePng}
             alt='Profile'
             height={40}
             width={40}
@@ -187,15 +187,7 @@ export default function HomePage() {
           {filteredListings.map((listing, index) => (
             <Listing
               key={index}
-              title={listing.title}
-              url={listing.url}
-              company={listing.company}
-              description={listing.description}
-              category={listing.category}
-              capacity={listing.capacity}
-              price={listing.price}
-              location={listing.location}
-              staff={listing.staff}
+              { ...listing }
             />
           ))}
         </div>

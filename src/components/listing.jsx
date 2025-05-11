@@ -1,4 +1,3 @@
-import Image from 'astro:assets';
 import { CiLocationOn } from 'react-icons/ci';
 import { BiArea } from 'react-icons/bi';
 import { FaPeopleRoof } from 'react-icons/fa6';
@@ -30,7 +29,7 @@ export default function Listing({
 }) {
   return (
     <div className='grid gap-3 md:grid-cols-1 lg:grid-cols-2'>
-      <Image
+      <img
         src={url}
         alt={title}
         className='w-full h-48 object-cover rounded'
