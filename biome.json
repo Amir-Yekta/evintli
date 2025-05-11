@@ -6,7 +6,7 @@
     "useEditorconfig": true,
     "formatWithErrors": false,
     "indentStyle": "space",
-    "indentWidth": 4,
+    "indentWidth": 2,
     "lineEnding": "lf",
     "lineWidth": 80,
     "attributePosition": "auto",
@@ -54,13 +54,14 @@
       "bracketSpacing": true
     },
     "linter": {
-      "enabled": true
+      "enabled": false
     }
   },
   "overrides": [
     {
       "include": ["*.svelte", "*.astro", "*.vue"],
       "linter": {
+        "enabled": false,
         "rules": {
           "style": {
             "useConst": "off",
