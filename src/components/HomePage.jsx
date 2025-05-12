@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import Listing from './listing';
+import Listing from './Listing';
 // import { FaBirthdayCake } from 'react-icons/fa';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { CiSearch } from 'react-icons/ci';
-import { listingLists } from '../extras/listingLists.js';
+import { listingLists } from '../extras/listingLists';
 
 export default function HomePage() {
   // State to manage the search query
@@ -31,7 +31,7 @@ export default function HomePage() {
   /**
    * Handle Searching
    *
-   * @param {Event} event
+   * @param {KeyboardEvent} event
    */
   function handleKeyDown(event) {
     if (event.key === 'Enter') {
@@ -49,12 +49,14 @@ export default function HomePage() {
       const updatedListingCategory = listingLists.filter(listing =>
         listing.category.toLowerCase().includes(query.toLowerCase())
       );
+
       // update listing combine of both matching title, company and category
       const updatedListing = [
         ...updatedListingTitle,
         ...updatedListingCategory,
         ...updatedListingCompany
       ];
+
       setFilteredListings([...new Set(updatedListing)]); // to set: take unique values, then backed to array
       setQuery(''); // Clear the search input
     }
@@ -72,7 +74,7 @@ export default function HomePage() {
         />
 
         {/* Center: Search Bar */}
-        <div className=' flex mx-5 flex-1/3'>
+        <div className='flex mx-5 flex-1/3'>
           <div className='relative w-full'>
             <input
               type='text'
