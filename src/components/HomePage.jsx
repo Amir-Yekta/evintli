@@ -70,7 +70,7 @@ export default function HomePage() {
         <img
           className='relative w-[101px] h-[37px]'
           id='logo'
-          src='/Logo.svg'
+          src='/logo.svg'
           alt='Evintli Logo'
         />
 
