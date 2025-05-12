@@ -1,0 +1,66 @@
+.searchBar {
+  position: absolute;
+  width: 538px;
+  height: 53px;
+  top: 0;
+  left: 0;
+  border-radius: 100px;
+}
+
+.description {
+  position: relative;
+  width: 151px;
+  height: 26px;
+  color: #71767c;
+  font-size: 13px;
+  text-align: center;
+  line-height: normal;
+}
+
+.subHeader {
+  position: relative;
+  width: 73px;
+  height: 13px;
+  top: 7px;
+  font-weight: 600;
+  color: #000;
+  font-size: 13px;
+}
+
+.addListing {
+  position: absolute;
+  width: 139px;
+  height: 42px;
+  top: 7px;
+  left: 1170px;
+  border-radius: 58px;
+  background-color: #000;
+}
+
+.addListing > :first-child {
+  position: relative;
+  width: inherit;
+  top: 0.5rem;
+  font-weight: 700;
+  color: #fff;
+  font-size: 17px;
+  text-align: center;
+}
+
+.notification {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 21px;
+  border: 0.5px solid #7f7f7f80;
+}
+
+.profile {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 21px;
+  border: 0.5px solid #7f7f7f80;
+}

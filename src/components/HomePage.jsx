@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import Listing from './Listing';
-// import { FaBirthdayCake } from 'react-icons/fa';
-import { IoMdNotificationsOutline } from 'react-icons/io';
 import { CiSearch } from 'react-icons/ci';
+// import { FaBirthdayCake } from 'react-icons/fa';
 import { listingLists } from '../extras/listingLists';
+import sty from './HomePage.module.css';
+import Listing from './Listing';
 
 export default function HomePage() {
   // State to manage the search query
@@ -65,10 +65,11 @@ export default function HomePage() {
   return (
     <div className='min-h-screen min-w-md bg-gray-50'>
       {/* Top Navigation Bar */}
-      <div className='flex items-center justify-between gap-36 px-20 py-4 bg-white shadow-md'>
+      <div className='flex flex-auto items-center justify-between gap-x-60 px-20 py-4 bg-white shadow-md'>
         {/* Left: Company Name */}
         <img
-          // className='relative w-[101px] h-[37px]'
+          className='relative w-[101px] h-[37px]'
+          id='logo'
           src='/Logo.svg'
           alt='Evintli Logo'
         />
@@ -88,19 +89,32 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right: Add Listing Button */}
-        <div className='flex items-center gap-4'>
+        {/* Right Section */}
+        <div className='relative flex flex-[3%] flex-row items-center gap-x-4'>
           <button className='px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-indigo-700'>
             Add Listing
           </button>
-          <IoMdNotificationsOutline className='text-4xl' />
-          <img
-            src='assets/profile.png'
-            alt='Profile'
-            height={40}
-            width={40}
-            className='w-10 h-10 rounded-full ml-4'
-          />
+          <div
+            className={`${sty.notification} top-[0.5px] left-[0.5rem] shadow-effect`}
+            id='notifications'
+          >
+            <img
+              className='relative top-[7.5px] left-[8px]'
+              id='bell'
+              src='/bell.svg'
+              alt='bell'
+            />
+          </div>
+          <div
+            className={`${sty.profile} top-[0.5px] left-[0.5rem] shadow-effect`}
+            id='profile'
+          >
+            <img
+              src='/profile.svg'
+              alt='Profile'
+              className='relative top-[7.5px] left-[8px]'
+            />
+          </div>
         </div>
       </div>
 
