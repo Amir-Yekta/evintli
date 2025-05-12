@@ -4,18 +4,18 @@ import { FaPeopleRoof } from 'react-icons/fa6';
 import { IoPersonAddOutline } from 'react-icons/io5';
 import { BiCategory } from 'react-icons/bi';
 
-/**
- * @param {Object} param0
- * @param {string} param0.title
- * @param {string} param0.url
- * @param {string} param0.company
- * @param {string} param0.description
- * @param {string} param0.category
- * @param {number} param0.capacity
- * @param {{ min: number, max: number }} param0.price
- * @param {string} param0.location
- * @param {{ min: number, max: number }} param0.staff
- */
+type Props = {
+  title: string;
+  url: string;
+  company: string;
+  description: string;
+  category: string;
+  capacity: number;
+  price: { min: number; max: number };
+  location: string;
+  staff: { min: number; max: number };
+}
+
 export default function Listing({
   title,
   url,
@@ -26,7 +26,7 @@ export default function Listing({
   price,
   location,
   staff,
-}) {
+}: Props) {
   return (
     <div className='grid gap-3 md:grid-cols-1 lg:grid-cols-2'>
       <img
