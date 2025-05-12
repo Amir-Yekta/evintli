@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
+import Listing from '../components/Listing';
 // import { FaBirthdayCake } from 'react-icons/fa';
 import { listingLists } from '../extras/listingLists';
 import sty from './HomePage.module.css';
-import Listing from '../components/Listing';
 
 export default function HomePage() {
   // State to manage the search query
@@ -152,4 +152,3 @@ export default function HomePage() {
     </div>
   );
 }
-

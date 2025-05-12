@@ -1,8 +1,9 @@
-import { CiLocationOn } from 'react-icons/ci';
+import Image from 'next/image';
 import { BiArea } from 'react-icons/bi';
+import { BiCategory } from 'react-icons/bi';
+import { CiLocationOn } from 'react-icons/ci';
 import { FaPeopleRoof } from 'react-icons/fa6';
 import { IoPersonAddOutline } from 'react-icons/io5';
-import { BiCategory } from 'react-icons/bi';
 
 type Props = {
   title: string;
@@ -29,7 +30,7 @@ export default function Listing({
 }: Props) {
   return (
     <div className='grid gap-3 md:grid-cols-1 lg:grid-cols-2'>
-      <img
+      <Image
         src={url}
         alt={title}
         className='w-full h-48 object-cover rounded'

@@ -35,5 +35,3 @@ body {
 .shadow-effect {
   @apply shadow-[0px_0px_4px_#00000040];
 }
-
-

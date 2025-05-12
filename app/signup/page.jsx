@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -15,18 +15,20 @@ export default function SignupPage() {
   const router = useRouter();
 
   /** @param {Event} e */
-  const handleChange = e => {
+  function handleChange(e) {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
-  };
+  }
 
   /** @param {Event} e */
-  const handleSubmit = async e => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    if (!form.accepted) return setError('You must accept the terms.');
+    if (!form.accepted)
+      return setError('You must accept the terms.');
+
     if (form.password !== form.confirmPassword)
-      return setError('Passwords do not match.');
+        return setError('Passwords do not match.');
 
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
@@ -41,7 +43,7 @@ export default function SignupPage() {
     if (!res.ok) return setError(data.error || 'Something went wrong.');
 
     router.push('/login');
-  };
+  }
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900'>

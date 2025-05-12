@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     // You can store the token in cookies or localStorage here
     // localStorage.setItem('token', data.token);
-    router.push("/home");
+    router.push('/home');
   }
 
   return (
