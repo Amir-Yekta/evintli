@@ -9,8 +9,10 @@ export default defineConfig({
   integrations: [react({
     experimentalReactChildren: true
   })],
-
   vite: {
     plugins: [tailwindcss()]
+  },
+  server: {
+    port: 3000
   }
 });
