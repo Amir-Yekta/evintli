@@ -1,34 +1,36 @@
+# EVINTLI PROJECT README
 
-EVINTLI PROJECT README
 
+## Clone & Install
 
-Clone & Install
----------------
 1. Clone this repository from GitHub.
 2. Navigate into the folder in your terminal.
-3. Run: yarn install
+3. Run: `pnpm install`
 
-Environment Variables
----------------------
+## Environment Variables
+
 1. Create a file named .env in the project's root.
 2. Add your MongoDB connection string and JWT secret, for example:
 
-   DATABASE_URL="mongodb+srv://username:password@cluster0.mongodb.net/evintli?retryWrites=true&w=majority"
-   JWT_SECRET="somethingsecret"
+```env
+DATABASE_URL="mongodb+srv://username:password@cluster0.mongodb.net/evintli?retryWrites=true&w=majority"
+JWT_SECRET="somethingsecret"
+```
 
-Database Sync
--------------
-1. Run: npx prisma db push
-2. Then: npx prisma generate
+## Database Sync
 
-Starting the Server
--------------------
-1. Run: yarn dev
-2. Open http://localhost:3000 in your browser.
+1. Run: `pnpm prisma db push`
+2. Then: `pnpm prisma generate`
 
-Default Routes
---------------
-• Home:   /  
-• Login:  /login  
-• Signup: /signup
+## Starting the Server
+
+1. Run: `pnpm dev`
+2. Open <http://localhost:3000> in your browser.
+
+## Default Routes
+
+* Index:   /  
+* Login:  /login  
+* Signup: /signup
+* Home: /home
 
