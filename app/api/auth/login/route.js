@@ -5,23 +5,21 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'evintli-secret';
 
+/** @param {Request} req */
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
 
-    if (!email || !password) {
+    if (!email || !password)
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
-    }
 
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
+    if (!user)
       return Response.json({ error: 'Invalid credentials.' }, { status: 401 });
-    }
 
     const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
+    if (!isValid)
       return Response.json({ error: 'Invalid credentials.' }, { status: 401 });
-    }
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
