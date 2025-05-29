@@ -1,11 +1,15 @@
 'use client';
 
+import logo from '../../public/logo.svg'
+import bell from '../../public/bell.svg'
+import profile from '../../public/profile.svg'
 import { useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
 import Listing from '../components/Listing';
 // import { FaBirthdayCake } from 'react-icons/fa';
 import { listingLists } from '../extras/listingLists';
 import sty from './HomePage.module.css';
+import Image from 'next/image';
 
 export default function HomePage() {
   // State to manage the search query
@@ -28,12 +32,8 @@ export default function HomePage() {
     else setSelectedCategory(category);
   }
 
-  /**
-   * Handle Searching
-   *
-   * @param {KeyboardEvent} event
-   */
-  function handleKeyDown(event) {
+  /** @param {KeyboardEvent} event */
+     function handleKeyDown(event) {
     if (event.key === 'Enter') {
       // Perform search action
       console.log('Search for:', query);
@@ -67,14 +67,18 @@ export default function HomePage() {
       {/* Top Navigation Bar */}
       <div className='flex flex-auto items-center justify-between gap-x-60 px-20 py-4 bg-white shadow-md'>
         {/* Left: Company Name */}
-        <img
-          className='relative w-[101px] h-[37px]'
+        <Image
+          className='relative'
           id='logo'
-          src='/logo.svg'
+          src={logo}
           alt='Evintli Logo'
+          width={101}
+          height={37}
         />
 
         {/* Center: Search Bar */}
+        {/* NOTE: This is not complete, it needs more styling */}
+        {/* TODO: Implement the appearence from Figma design */}
         <div className='flex mx-5 flex-1/3'>
           <div className='relative w-full'>
             <input
@@ -98,33 +102,41 @@ export default function HomePage() {
             className={`${sty.notification} top-[0.5px] left-[0.5rem] shadow-effect`}
             id='notifications'
           >
-            <img
+            <Image
               className='relative top-[7.5px] left-[8px]'
               id='bell'
-              src='/bell.svg'
+              src={bell}
               alt='bell'
+              width={24}
+              height={25}
             />
           </div>
           <div
             className={`${sty.profile} top-[0.5px] left-[0.5rem] shadow-effect`}
             id='profile'
           >
-            <img
-              src='/profile.svg'
-              alt='Profile'
+            <Image
               className='relative top-[7.5px] left-[8px]'
+              id='profile'
+              alt='Profile'
+              src={profile}
+              width={22}
+              height={23}
             />
           </div>
         </div>
       </div>
 
+      <div className='relative w-fit h-[3px] bg-[#f1f1f1] mb-1 shadow-effect' id='expansive-menu'></div>
+
       {/* Event Category Navigation */}
-      <nav className='flex justify-center gap-4 py-4 bg-green-100'>
+      {/* NOTE: This is not complete, it needs more styling */}
+      <nav className='flex justify-center gap-4 py-4' id='categories'>
         {['Home', 'Wedding', 'Birthday', 'Ceremony', 'Federal', 'Others'].map(
           category => (
             <button
               key={category}
-              className='px-4 py-2 text-2xl text-green-800 hover:text-green-950 hover:underline'
+              className='px-4 py-2 text-2xl text-black hover:text-[#008080] hover:underline'
               onClick={() => {
                 setSelectedCategory(category);
                 handleNavigation(category);
@@ -137,7 +149,7 @@ export default function HomePage() {
       </nav>
 
       {/* Main Body - Listings */}
-      <main className='p-20'>
+      <main className='p-20' id='listings'>
         <h2 className='mb-4 text-xl font-semibold text-gray-800'>
           Event Listings
         </h2>
