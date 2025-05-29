@@ -37,16 +37,14 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <img src="/Group 420047.svg" alt="Eventli Logo" className="h-10 mb-6 mx-auto" />
         <h1 className="text-2xl text-black font-bold mb-6 text-center">Create an account</h1>
-        <input
-         name="name" 
-         placeholder="Full name" 
-         value={form.name} 
-         onChange={handleChange}
-          className="input placeholder-gray-500 text-black" 
-          />
+        
+        
 
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-left mb-1 mt-1">Email</label>
         <input 
+        id="email"
         name="email"
          placeholder="Email" 
          value={form.email} 
@@ -54,7 +52,9 @@ export default function SignupPage() {
          className="input placeholder-gray-500 text-black" 
          />
 
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-left mb-1 mt-1">Create a password</label>
         <input 
+        id="password"
         name="password" 
         type="password" 
         placeholder="Create a password" 
@@ -63,7 +63,9 @@ export default function SignupPage() {
         className="input placeholder-gray-500 text-black" 
         />
 
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 text-left mb-1 mt-1">Re-enter your password</label>
         <input 
+        id="confirmPassword"
         name="confirmPassword" 
         type="password" 
         placeholder="Re-enter your password" 
@@ -72,7 +74,7 @@ export default function SignupPage() {
         className="input placeholder-gray-500 text-black" 
         />
 
-        <label className="flex items-center text-sm my-3">
+        <label className="flex items-center text-sm my-3 mt-1">
           <input 
           type="checkbox" 
           name="accepted" 
@@ -88,6 +90,14 @@ export default function SignupPage() {
         {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
         
         <button className="bg-blue-600 text-white py-2 rounded w-full font-semibold">Sign-up</button>
+        <button 
+          type="button" 
+          className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+          // onClick={handleGoogleSignIn} // You'll need to implement this function
+        >
+          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google sign-in" className="h-5 w-5 mr-2" />
+          Sign up with Google
+        </button>
         <p className="text-center text-sm mt-4 text-black">
           Already have an account? <a href="/login" className="text-blue-600 font-medium">Login</a>
         </p>
