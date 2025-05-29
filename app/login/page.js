@@ -1,29 +1,30 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
       body: JSON.stringify(form),
     });
 
     const data = await res.json();
-    if (!res.ok) return setError(data.error || 'Something went wrong');
+    if (!res.ok) return setError(data.error || "Something went wrong");
 
     // You can store the token in cookies or localStorage here
     // localStorage.setItem('token', data.token);
-    router.push('/');
+    router.push("/home");
   };
 
   return (
@@ -68,7 +69,10 @@ export default function LoginPage() {
           Sign in with Google
         </button>
         <p className="text-center text-black text-sm mt-4">
-          Don’t have an account? <a href="/signup" className="text-blue-600 font-medium">Sign-up</a>
+          Don’t have an account?{" "}
+          <a href="/signup" className="text-blue-600 font-medium">
+            Sign-up
+          </a>
         </p>
       </form>
     </div>

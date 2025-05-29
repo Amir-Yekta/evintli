@@ -13,10 +13,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Models: User, Listing, Service, Schedule, Booking
+enum UserRole {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   password  String
   name      String?
+  role      UserRole @default(CUSTOMER) // Default role is CUSTOMER
   createdAt DateTime @default(now())
+
+  listing Listing[] // one-to-many relationship with Listing
+}
+
+// adding other models: listing, schedule, booking, photo
+
+model Listing {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String  @db.ObjectId
+  name         String
+  event_type   String?
+  cuisine_type String?
+  capacity     Int?
+  schedule_id  String  @db.ObjectId // foreign key to Schedule
+  description  String?
+  floor_price  Float?
+  roof_price   Float?
+  photo        Photo[] // array of photos
+
+  createdAt DateTime @default(now())
+
+  user     User       @relation(fields: [userId], references: [id])
+  Schedule Schedule[]
+}
+
+model Schedule {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  listingId String   @db.ObjectId
+  date      DateTime
+  notes     String?
+
+  listing Listing @relation(fields: [userId], references: [id])
+}
+
+model Photo {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  listingId String @db.ObjectId
+
+  listing Listing @relation(fields: [listingId], references: [id])
 }
