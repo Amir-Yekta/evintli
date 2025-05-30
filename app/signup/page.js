@@ -2,38 +2,62 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signUp } from "../../lib/supabase_auth";
 
 export default function SignupPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', accepted: false });
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    accepted: false,
+  });
   const [error, setError] = useState('');
   const router = useRouter();
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+  const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); //prevent page refresh
+    setError(''); //reset errors
 
-    if (!form.accepted) return setError('You must accept the terms.');
-    if (form.password !== form.confirmPassword) return setError('Passwords do not match.');
+    //validate form
+  if (!form.email || !form.password || !form.confirmPassword) {
+    return setError('Please fill in all fields.');
+  }
+  if (form.password !== form.confirmPassword) {
+    return setError('Passwords do not match.');
+  }
+  if (!form.accepted) {
+    return setError('You must accept the terms and conditions.');
+  }
 
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        password: form.password,
-      }),
-    });
+  const { data, error } = await signUp({
+    email: form.email,
+    password: form.password,
+  });
 
-    const data = await res.json();
-    if (!res.ok) return setError(data.error || 'Something went wrong.');
+  if (error) {
+    return setError(error.message);
+  }
 
     router.push('/login');
-  };
+};
 
+const handleGoogleSignIn = async () => { //NOT YET FINSIHED
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/home`,
+    },
+  });
+};
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
@@ -104,4 +128,4 @@ export default function SignupPage() {
       </form>
     </div>
   );
-}
+};
