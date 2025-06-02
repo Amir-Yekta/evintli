@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false, // Consider setting to true for better type safety in the long run
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "bundler", // More modern and often preferred over "node"
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    // --- Add these for path aliasing ---
+    "baseUrl": ".", // Tells TypeScript the root for path resolution
+    "paths": {
+      "@/*": ["./app/*"] // Maps @/* to your app directory
+    }
+    // ------------------------------------
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts", // Includes all .ts files in your project
+    "**/*.tsx", // Includes all .tsx files
+    "**/*.js",  // Includes .js files if you're mixing, due to allowJs: true
+    "**/*.mjs"
+  ],
+  "exclude": ["node_modules"]
+}
