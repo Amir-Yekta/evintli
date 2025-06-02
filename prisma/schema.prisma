@@ -22,12 +22,12 @@ enum UserRole {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   password  String
   name      String?
-  role      UserRole   @default(CUSTOMER) // Default role is CUSTOMER
-  createdAt DateTime   @default(now())
+  role      UserRole @default(CUSTOMER) // Default role is CUSTOMER
+  createdAt DateTime @default(now())
 
   listings  Listing[] // one-to-many relationship with Listing (changed from 'listing' to 'listings' for clarity)
   schedules Schedule[] // User can have multiple schedules
@@ -47,27 +47,27 @@ model Listing {
   roof_price   Float?
   photos       Photo[] // array of photos (changed from 'photo' to 'photos' for clarity)
 
-  createdAt DateTime   @default(now())
+  createdAt DateTime @default(now())
 
   user      User       @relation(fields: [userId], references: [id])
   schedules Schedule[] // Listing can have multiple schedules
 }
 
 model Schedule {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   listingId String
   date      DateTime
   notes     String?
 
-  user    User      @relation(fields: [userId], references: [id])
-  listing Listing   @relation(fields: [listingId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  listing Listing @relation(fields: [listingId], references: [id])
 }
 
 model Photo {
-  id        String  @id @default(uuid())
+  id        String @id @default(uuid())
   url       String
   listingId String
 
-  listing Listing   @relation(fields: [listingId], references: [id])
+  listing Listing @relation(fields: [listingId], references: [id])
 }
