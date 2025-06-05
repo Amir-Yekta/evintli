@@ -11,7 +11,7 @@ export async function POST(req) {
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
-    const { user, session, error } = await login({ email, password })
+    const { session, error } = await login({ email, password })
 
     if (error) {
       if (error.message.includes('Invalid login credentials'))
