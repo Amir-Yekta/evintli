@@ -12,7 +12,7 @@ export async function POST(req) {
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
-    const { user, session, error } = await signUp({ email, password })
+    const { user, error } = await signUp({ email, password })
 
     if (error) {
       if (error.message.includes('User already registered'))
