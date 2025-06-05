@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import { supabase } from './supabase';
 
 export async function createProfile(userId: string, fullName: string) {
