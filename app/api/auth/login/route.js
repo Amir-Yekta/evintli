@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { login } from '@/lib/supabase_auth';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'evintli-secret';
-
+/**
+ * @param {Request} req
+ */
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
@@ -13,25 +11,21 @@ export async function POST(req) {
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return Response.json({ error: 'Invalid credentials.' }, { status: 401 });
+    const { user, session, error } = await login({ email, password })
+
+    if (error) {
+      if (error.message.includes('Invalid login credentials'))
+        return Response.json({ error: 'Invalid credentials' }, { status: 401 });
+
+      console.error('Login Route - Supabase signIn error:' + error.message);
+      return Response.json({ error: 'Internal server error.' }, { status: 500 });
     }
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return Response.json({ error: 'Invalid credentials.' }, { status: 401 });
-    }
-
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const token = session?.access_token;
 
     return Response.json({ message: 'Login successful', token }, { status: 200 });
   } catch (err) {
-    console.error(err);
+    console.error('Login Route - General error:' + err);
     return Response.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }

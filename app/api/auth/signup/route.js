@@ -1,8 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { signUp } from '@/lib/supabase_auth';
+import { createProfile } from '@/lib/supabase_crud';
 
-const prisma = new PrismaClient();
-
+/**
+ * @param {Request} req
+ */
 export async function POST(req) {
   try {
     const { name, email, password } = await req.json();
@@ -11,23 +12,26 @@ export async function POST(req) {
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return Response.json({ error: 'User already exists.' }, { status: 400 });
+    const { user, session, error } = await signUp({ email, password })
+
+    if (error) {
+      if (error.message.includes('User already registered'))
+        return Response.json({ error: 'User already exists.' }, { status: 400 });
+
+      console.error('Sign Up Route - Supabase signUp error:' + error.message);
+      return Response.json({ error: 'Internal server error.' }, { status: 500 });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
-    });
+    if (user) {
+      try {
+        await createProfile(user.id, name)
+      } catch (profileError) {
+        if (profileError instanceof Error) {
+          console.error('Signup Route - Error creating user profile:' + profileError.message)
+          return Response.json({ error: 'User signed up but profile could not be created.' }, { status: 500 });
+        }
+      }
+    }
 
     return Response.json({ message: 'User created successfully.' }, { status: 201 });
   } catch (err) {
