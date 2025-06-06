@@ -56,13 +56,14 @@ export default function SignupPage() {
     router.push('/login');
   }
 
-  // spellcheck: ignore
-  // async function handleGoogleSignIn() { // NOT YET FINSIHED
-  //   const { data, error } = await supabase.auth.signInWithOAuth({
-  //     provider: 'google',
-  //     options: { redirectTo: `${window.location.origin}/home` }
-  //   });
-  // }
+  async function handleGoogleSignIn() {
+    setError('')
+    const { /* data, */ error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/home` }
+    });
+    if (error) setError(error.message)
+  }
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900'>
@@ -121,7 +122,7 @@ export default function SignupPage() {
           type='button'
           className='mt-4 w-full flex items-center justify-center py-2 px-4 border border-gray-300
             rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50'
-          // onClick={handleGoogleSignIn} // You'll need to implement this function
+          onClick={handleGoogleSignIn}
         >
           <Image
             src={googleLogo}
