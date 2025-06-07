@@ -1,9 +1,7 @@
 import { signUp } from '../../../../lib/supabase_auth';
 import { createProfile } from '../../../../lib/supabase_crud';
 
-/**
- * @param {Request} req
- */
+/** @param {Request} req */
 export async function POST(req) {
   try {
     /** @type
