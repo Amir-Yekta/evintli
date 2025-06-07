@@ -1,11 +1,11 @@
 'use client';
 
-import logo from '../../public/logo.svg'
-import googleLogo from '../../public/google_g_logo.svg'
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import googleLogo from '../../public/google_g_logo.svg'
+import logo from '../../public/logo.svg'
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,7 +29,9 @@ export default function LoginPage() {
 
     /** @type {{ error: string }} */
     const data = await res.json();
-    if (!res.ok) return setError(data.error || 'Something went wrong');
+
+    if (!res.ok)
+      return setError(data.error || 'Something went wrong');
 
     // You can store the token in cookies or localStorage here
     // localStorage.setItem('token', data.token);
@@ -42,6 +44,7 @@ export default function LoginPage() {
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/home` }
     });
+
     if (error) setError(error.message)
   }
 

@@ -1,15 +1,13 @@
-import { login } from '@/lib/supabase_auth';
+import { login } from '../../../../lib/supabase_auth';
 
-/**
- * @param {Request} req
- */
+/** @param {Request} req */
 export async function POST(req) {
   try {
+    /** @type {{ email: string, password: string }} */
     const { email, password } = await req.json();
 
-    if (!email || !password) {
+    if (!email || !password)
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
-    }
 
     const { session, error } = await login({ email, password })
 
@@ -25,7 +23,7 @@ export async function POST(req) {
 
     return Response.json({ message: 'Login successful', token }, { status: 200 });
   } catch (err) {
-    console.error('Login Route - General error:' + err);
+    console.error('Login Route - General error:', err);
     return Response.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }

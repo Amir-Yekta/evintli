@@ -6,7 +6,7 @@ export async function signUp({ email, password }: { email: string; password: str
 	if (error)
 		console.error('Sign Up - Error signing up new user:' + error.message);
 	else
-		console.log('Sign Page - User signed up successfully:' + data);
+		console.log('Sign Page - User signed up successfully:', data);
 
 	return { ...data, error };
 }
@@ -17,7 +17,7 @@ export async function login({ email, password }: { email: string; password: stri
 	if (error)
     console.error('Login - Error signing in user:' + error.message);
   else
-    console.log('Login - User signed in successfully:' + data);
+    console.log('Login - User signed in successfully:', data);
 
 	return { ...data, error };
 }

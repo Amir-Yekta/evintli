@@ -1,12 +1,11 @@
 'use client';
 
-import logo from '../../public/logo.svg'
-import googleLogo from '../../public/google_g_logo.svg'
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { signUp } from '../../lib/supabase_auth';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../lib/supabase';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import googleLogo from '../../public/google_g_logo.svg'
+import logo from '../../public/logo.svg'
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -51,7 +50,9 @@ export default function SignupPage() {
 
     /** @type {{ error: string }} */
     const data = await res.json();
-    if (!res.ok) return setError(data.error || 'Something went wrong');
+
+    if (!res.ok)
+      return setError(data.error || 'Something went wrong');
 
     router.push('/login');
   }
@@ -62,6 +63,7 @@ export default function SignupPage() {
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/home` }
     });
+
     if (error) setError(error.message)
   }
 

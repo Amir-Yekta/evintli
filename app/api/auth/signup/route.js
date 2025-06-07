@@ -1,16 +1,18 @@
-import { signUp } from '@/lib/supabase_auth';
-import { createProfile } from '@/lib/supabase_crud';
+import { signUp } from '../../../../lib/supabase_auth';
+import { createProfile } from '../../../../lib/supabase_crud';
 
 /**
  * @param {Request} req
  */
 export async function POST(req) {
   try {
+    /** @type
+     * {{ name: string, email: string, password: string }}
+     */
     const { name, email, password } = await req.json();
 
-    if (!email || !password) {
+    if (!email || !password)
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
-    }
 
     const { user, error } = await signUp({ email, password })
 
@@ -26,10 +28,10 @@ export async function POST(req) {
       try {
         await createProfile(user.id, name)
       } catch (profileError) {
-        if (profileError instanceof Error) {
+        if (profileError instanceof Error)
           console.error('Signup Route - Error creating user profile:' + profileError.message)
-          return Response.json({ error: 'User signed up but profile could not be created.' }, { status: 500 });
-        }
+
+        return Response.json({ error: 'User signed up but profile could not be created.' }, { status: 500 });
       }
     }
 
