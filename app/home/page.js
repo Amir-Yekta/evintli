@@ -60,96 +60,119 @@ const listingLists = [
 
 export default function HomePage() {
   // State to manage the search query
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [filteredListings, setFilteredListings] = useState(listingLists);
 
   // State to manage the selected navigation category
-  const [selectedCategory, setSelectedCategory] = useState("Home");
-  const handleNavigation = (category) => {
+  const [selectedCategory, setSelectedCategory] = useState('Home');
+
+  /** @param {string} category */
+  function handleNavigation(category) {
     // Set the selected category
-    console.log("Selected category:", selectedCategory);
+    console.log('Selected category: ' + selectedCategory);
 
-    const updatedListing = listingLists.filter(
-      (listing) =>
-        listing.category.toLocaleLowerCase() === category.toLocaleLowerCase()
-    );
+    // const updatedListing = listingLists.filter(listing =>
+    //   listing.category.toLocaleLowerCase() === category.toLocaleLowerCase()
+    // );
 
-    category === "Home"
-      ? setFilteredListings(listingLists)
-      : setFilteredListings(updatedListing);
-  };
+    if (category === 'Home') setSelectedCategory('Home');
+    else setSelectedCategory(category);
+  }
 
-  //Handle Searching
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  /** @param {KeyboardEvent} event */
+  function handleKeyDown(event) {
+    if (event.key === 'Enter') {
       // Perform search action
-      console.log("Search for:", query);
+      console.log('Search for:', query);
 
-      const updatedListingTitle = listingLists.filter((listing) =>
+      const updatedListingTitle = listingLists.filter(listing =>
         listing.title.toLowerCase().includes(query.toLowerCase())
       );
 
-      const updatedListingCompany = listingLists.filter((listing) =>
+      const updatedListingCompany = listingLists.filter(listing =>
         listing.company.toLowerCase().includes(query.toLowerCase())
       );
 
-      const updatedListingCategory = listingLists.filter((listing) =>
+      const updatedListingCategory = listingLists.filter(listing =>
         listing.category.toLowerCase().includes(query.toLowerCase())
       );
+
       // update listing combine of both matching title, company and category
       const updatedListing = [
         ...updatedListingTitle,
         ...updatedListingCategory,
-        ...updatedListingCompany,
+        ...updatedListingCompany
       ];
+
       setFilteredListings([...new Set(updatedListing)]); // to set: take unique values, then backed to array
-      setQuery(""); // Clear the search input
+      setQuery(''); // Clear the search input
     }
-  };
+  }
+  
   return (
     <div className="min-h-screen min-w-md bg-gray-50">
       {/* Top Navigation Bar */}
-      <header className="flex items-center justify-between gap-36 px-20 py-4 bg-white shadow-md">
+      <div className='flex flex-auto items-center justify-between gap-x-60 px-20 py-4 bg-white shadow-md'>
         {/* Left: Company Name */}
-        <div className="text-3xl font-bold">
-          <div className="pb-1 border-x-3 w-6 mx-2"></div>
-          <div className="pb-0.5 border-3 w-10"></div>
-          <span className="px-2.5 border-3 border-b-gray-950 w-6 text-green-900">
-            e
-          </span>
-          vintli
-        </div>
+        <Image
+          className='relative'
+          id='logo'
+          src={logo}
+          alt='Evintli Logo'
+          width={101}
+          height={37}
+        />
 
         {/* Center: Search Bar */}
-        <div className=" flex mx-5 flex-1/3">
-          <div className="relative w-full">
+        {/* NOTE: This is not complete, it needs more styling */}
+        {/* TODO: Implement the appearence from Figma design */}
+        <div className='flex mx-5 flex-1/3'>
+          <div className='relative w-full'>
             <input
-              type="text"
-              placeholder="Search services, suppliers,..."
+              type='text'
+              placeholder='Search services, suppliers,...'
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={e => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full pl-12 pr-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className='w-full pl-12 pr-4 py-2 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-indigo-500'
             />
-            <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl text-gray-500" />
+            <CiSearch className='absolute left-4 top-1/2 transform -translate-y-1/2 text-xl text-gray-500' />
           </div>
         </div>
 
-        {/* Right: Add Listing Button */}
-        <div className="flex items-center gap-4">
-          <button className="px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-indigo-700">
+        {/* Right Section */}
+        <div className='relative flex flex-[3%] flex-row items-center gap-x-4'>
+          <button className='px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-indigo-700'>
             Add Listing
           </button>
-          <IoMdNotificationsOutline className="text-4xl" />
-          <Image
-            src="/assets/profile.png"
-            alt="Profile"
-            height={40}
-            width={40}
-            className="w-10 h-10 rounded-full ml-4"
-          />
+          <div
+            className={`${sty.notification} top-[0.5px] left-[0.5rem] shadow-effect`}
+            id='notifications'
+          >
+            <Image
+              className='relative top-[7.5px] left-[8px]'
+              id='bell'
+              src={bell}
+              alt='bell'
+              width={24}
+              height={25}
+            />
+          </div>
+          <div
+            className={`${sty.profile} top-[0.5px] left-[0.5rem] shadow-effect`}
+            id='profile'
+          >
+            <Image
+              className='relative top-[7.5px] left-[8px]'
+              id='profile'
+              alt='Profile'
+              src={profile}
+              width={22}
+              height={23}
+            />
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* Event Category Navigation */}
 
