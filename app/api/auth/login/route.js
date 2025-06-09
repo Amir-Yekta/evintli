@@ -6,6 +6,10 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'evintli-secret';
 
 export async function POST(req) {
+<<<<<<< Updated upstream
+=======
+  const supabase = await createSupabaseServerClient(); // Added awai
+>>>>>>> Stashed changes
   try {
     const { email, password } = await req.json();
 
