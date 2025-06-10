@@ -65,7 +65,7 @@ export default function ListingSection() {
   const handleEditListing = (listing) => {
     console.log("Edit listing:", listing)
     setCurrentView("editForm")
-    setSelectedListing(listing)  // optional, if using a selected listing state
+    setSelectedListing(listing) 
   }
 
   const handleUpdateListing = async (e) => {
@@ -514,7 +514,6 @@ export default function ListingSection() {
               <div className="flex-1"></div>
               <button
                 type="submit"
-                onClick={handleUpdateListing}
                 className="cursor-pointer px-8 py-3 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 Save Changes
