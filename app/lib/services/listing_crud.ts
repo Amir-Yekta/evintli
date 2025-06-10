@@ -4,10 +4,21 @@ const supabase = createSupabaseBrowserClient();
 
 //Create new listing
 export const createListing = async (formData: FormData, user_id: string) => {
-  const { title, city, address, priceRange, eventType, servingStyle, numOfStaff, numOfGuests, description, image_url } = Object.fromEntries(formData)
+  const {
+    title,
+    city,
+    address,
+    priceRange,
+    eventType,
+    servingStyle,
+    numOfStaff,
+    numOfGuests,
+    description,
+    image_url
+  } = Object.fromEntries(formData)
 
   const { data, error } = await supabase.from("listing").insert([{
-    user_id,
+    user_id, 
     title,
     city,
     address,
@@ -22,6 +33,7 @@ export const createListing = async (formData: FormData, user_id: string) => {
 
   return { data, error }
 }
+
 
 //Fetch all users listings
 export const getUserListings = async (user_id: string) => {

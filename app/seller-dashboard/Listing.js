@@ -2,10 +2,40 @@
 
 import { useState } from "react"
 import { FiPlus, FiEdit, FiTrash2, FiArrowLeft } from "react-icons/fi"
+import { createListing } from "../lib/services/listing_crud"
+import { useSession } from "@supabase/auth-helpers-react"
+
 
 export default function ListingSection() {
   const [currentView, setCurrentView] = useState("dashboard") // 'dashboard', 'add', 'edit', 'delete'
   const [imagePreview, setImagePreview] = useState(null)
+
+  const session = useSession()
+
+  //Handle for creating a form submission to create a new listing
+  const handleCreateListing = async (e) => {
+    e.preventDefault()
+
+    const userId = "[enter auth.user.id]"; // works even if session is null
+
+    // if (!session?.user?.id) {
+    //   alert("User not logged in.")   //RE-ENABLE THIS AFTER TESTING.
+    //   return
+    // }
+
+    const formData = new FormData(e.target)
+    //Add image upload handling here if you're uploading to Supabase Storage separately
+
+    const { data, error } = await createListing(formData, userId) //STATIC ID FOR TESTING
+
+    if (error) {
+      console.error("Error creating listing:", error)
+      alert("There was an error creating the listing.")
+    } else {
+      alert("Listing created successfully!")
+      handleBackToDashboard()
+    }
+  }
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0]
@@ -108,7 +138,7 @@ export default function ListingSection() {
 
       <div className="rounded-lg shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
         <div className="p-8">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleCreateListing}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Left column */}
               <div className="space-y-6">
