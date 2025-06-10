@@ -7,7 +7,8 @@ import { useSession } from "@supabase/auth-helpers-react"
 import { uploadImage } from "../lib/services/listing_crud"
 
 export default function ListingSection() {
-  const [currentView, setCurrentView] = useState("dashboard") // 'dashboard', 'add', 'edit', 'delete'
+  const [currentView, setCurrentView] = useState("dashboard") // 'dashboard', 'add', 'edit', 'editForm', 'delete'
+  const [selectedListing, setSelectedListing] = useState(null) 
   const [imagePreview, setImagePreview] = useState(null)
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
@@ -62,14 +63,42 @@ export default function ListingSection() {
   };
 
   const handleEditListing = (listing) => {
-    // You can either:
-    // - Set selected listing in state
-    // - Navigate to a detailed edit screen
     console.log("Edit listing:", listing)
-    setCurrentView("editSingle") // or however your view switching works
+    setCurrentView("editForm")
     setSelectedListing(listing)  // optional, if using a selected listing state
   }
 
+  const handleUpdateListing = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const file = formData.get("image");
+    let image_url = null;
+
+    if (file instanceof File && file.size > 0) {
+      const { url, error } = await uploadImage(file, session.user.id);
+      if (error) {
+        console.error("Error uploading image:", error);
+        return;
+      }
+      image_url = url;
+    }
+    formData.set("image_url", image_url);
+    formData.delete("image"); // Remove raw file from formData
+    formData.set("id", selectedListing.id); // Set the listing ID for editing
+
+    const { data, error } = await updateListing(session.user.id, formData);
+    setCurrentView("edit")
+    setSelectedListing(null)
+
+    //Error handling
+    if (error) {
+      console.error("Error updating listing:", error);
+      alert("There was an error updating the listing.");
+    } else {
+      alert("Listing updated successfully!");
+      handleBackToDashboard();
+    }
+  }
 
   const handleBackToDashboard = () => {
     setCurrentView("dashboard")
@@ -400,6 +429,104 @@ export default function ListingSection() {
     </div>
   )
 
+  // Edit Listing Form View
+  const renderEditListingForm = (listing) => (
+    <div className="max-w-6xl mx-auto">
+      <div className="flex items-center mb-6">
+        <button
+          onClick={handleBackToDashboard}
+          className="cursor-pointer flex items-center mr-4 py-2 px-4 rounded-md hover:bg-green-100 text-green-700 hover:text-green-800 transition-all duration-200"
+        >
+          <FiArrowLeft className="w-4 h-4 mr-2" />
+          Back to Dashboard
+        </button>
+        <h2 className="text-3xl font-bold text-gray-800">Edit Listing: {listing.title}</h2>
+      </div>
+
+      {/* Form similar to Add Listing but pre-filled with listing data */}
+       <div className="rounded-lg shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
+        <div className="p-8">
+          <form className="space-y-6" onSubmit={(e) => handleUpdateListing(e, listing.id)}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left column */}
+              <div className="space-y-6">
+                <InputField id="title" label="Title" defaultValue={listing.title} />
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField id="city" label="City" defaultValue={listing.city} />
+                  <InputField id="address" label="Address" defaultValue={listing.address} />
+                </div>
+                <InputField id="priceRange" label="Price Range" defaultValue={listing.priceRange} />
+                <InputField id="eventType" label="Event Type" defaultValue={listing.eventType} />
+              </div>
+
+              {/* Right column */}
+              <div className="space-y-6">
+                <InputField id="servingStyle" label="Serving Style" defaultValue={listing.servingStyle} />
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField id="numOfStaff" label="Number of Staff" type="number" defaultValue={listing.numOfStaff} />
+                  <InputField id="numOfGuests" label="Number of Guests" type="number" defaultValue={listing.numOfGuests} />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="description" className="text-sm font-semibold text-gray-700">Description</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    defaultValue={listing.description}
+                    className="min-h-[120px] resize-none w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Image section */}
+            <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border-2 border-green-100">
+              <div className="space-y-3">
+                <label htmlFor="image" className="text-sm font-semibold text-gray-700">Upload New Image (Optional)</label>
+                <div className="flex items-start gap-6">
+                  <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="cursor-pointer w-full p-3 border-2 border-gray-200 rounded-lg bg-white"
+                  />
+                  <div className="w-32 h-32 rounded-lg overflow-hidden border-2 border-green-200 shadow-lg">
+                    <img
+                      src={imagePreview || listing.image_url || "/placeholder.svg"}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={handleBackToDashboard}
+                className="cursor-pointer px-8 py-3 rounded-md border-2 border-gray-300 text-gray-600 hover:bg-gray-100 transition-all duration-200"
+              >
+                Cancel
+              </button>
+              <div className="flex-1"></div>
+              <button
+                type="submit"
+                onClick={handleUpdateListing}
+                className="cursor-pointer px-8 py-3 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+
+
   // Delete listings view
   const renderDeleteListings = () => (
     <div className="max-w-6xl mx-auto">
@@ -433,6 +560,8 @@ export default function ListingSection() {
       return renderAddListing()
     case "edit":
       return renderEditListings()
+    case "editForm":
+      return renderEditListingForm(selectedListing) //fills form with the selected listing data
     case "delete":
       return renderDeleteListings()
     default:
