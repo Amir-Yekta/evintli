@@ -14,7 +14,7 @@ export const createListing = async (formData: FormData, user_id: string) => {
     numOfStaff,
     numOfGuests,
     description,
-    image_url
+    image_url,
   } = Object.fromEntries(formData)
 
   const { data, error } = await supabase.from("listing").insert([{
@@ -33,7 +33,6 @@ export const createListing = async (formData: FormData, user_id: string) => {
 
   return { data, error }
 }
-
 
 //Fetch all users listings
 export const getUserListings = async (user_id: string) => {

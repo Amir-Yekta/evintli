@@ -36,12 +36,12 @@ export default function ListingSection() {
       formData.set("image_url", image_url);
       formData.delete("image"); //Remove raw file from formData
 
-      const { data, error } = await createListing(formData, user.id);
+      const { data, error } = await createListing(formData, session?.user?.id);
 
     //Error handling
       if (error) {
         console.error("Error creating listing:", error);
-        alert("There was an error creating the listing. Try again later.");
+        alert("There was an error creating the listing.");
       } else {
         alert("Listing created successfully!");
         handleBackToDashboard();
