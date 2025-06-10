@@ -100,6 +100,28 @@ export default function ListingSection() {
     }
   }
 
+  const handleDeleteListing = async (listing) => {
+    console.log("Delete listing:", listing)
+    setSelectedListing(listing) 
+
+    //final confimation
+    const confirmed = confirm(`Are you sure you want to delete the listing "${listing.title}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    //delete listing
+    const { error } = await deleteListing(listing.id);
+
+    //Error handling
+    if (error) {
+      console.error("Error deleting listing:", error);
+      alert("There was an error deleting the listing.");
+    } else {
+      alert("Listing deleted successfully!");
+      setListings(listings.filter((l) => l.id !== listing.id));
+      setCurrentView("dashboard");
+    }
+  }
+
   const handleBackToDashboard = () => {
     setCurrentView("dashboard")
     setImagePreview(null)
@@ -545,9 +567,27 @@ export default function ListingSection() {
           <h3 className="text-2xl font-bold">Manage Deletions</h3>
           <p className="text-red-100">Select listings to remove</p>
         </div>
-        <div className="p-8">
-          <p className="text-gray-600 text-lg">This section will display your existing listings for deletion.</p>
-          {/* You can add your existing listings here */}
+        <div className="p-8"> 
+          {loading ? (
+            <p className="text-gray-600">Loading your listings...</p>
+          ) : listings.length === 0 ? (
+            <p className="text-gray-600 text-lg">You have no listings yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {listings.map((listing) => (
+                <div key={listing.id} className="bg-white rounded-lg p-4 shadow-md border hover:shadow-lg transition duration-200">
+                  <h4 className="text-xl font-semibold text-gray-800">{listing.title}</h4>
+                  <p className="text-gray-600 mt-1">{listing.description?.slice(0, 80)}...</p>
+                  <button
+                    onClick={() => handleDeleteListing(listing)}
+                    className="mt-4 inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition"
+                  >
+                    <FiEdit className="mr-2" /> Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
