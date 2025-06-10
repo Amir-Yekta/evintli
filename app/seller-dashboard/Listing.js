@@ -16,17 +16,15 @@ export default function ListingSection() {
   const handleCreateListing = async (e) => {
     e.preventDefault()
 
-    const userId = "[enter auth.user.id]"; // works even if session is null
-
-    // if (!session?.user?.id) {
-    //   alert("User not logged in.")   //RE-ENABLE THIS AFTER TESTING.
-    //   return
-    // }
+    if (!session?.user?.id) {
+      alert("User not logged in.")
+      return
+    }
 
     const formData = new FormData(e.target)
     //Add image upload handling here if you're uploading to Supabase Storage separately
 
-    const { data, error } = await createListing(formData, userId) //STATIC ID FOR TESTING
+    const { data, error } = await createListing(formData, session?.user?.id)
 
     if (error) {
       console.error("Error creating listing:", error)
