@@ -4,7 +4,7 @@ import { useState } from "react"
 import { FiPlus, FiEdit, FiTrash2, FiArrowLeft } from "react-icons/fi"
 import { createListing } from "../lib/services/listing_crud"
 import { useSession } from "@supabase/auth-helpers-react"
-
+import { uploadImage } from "../lib/services/listing_crud"
 
 export default function ListingSection() {
   const [currentView, setCurrentView] = useState("dashboard") // 'dashboard', 'add', 'edit', 'delete'
@@ -12,44 +12,58 @@ export default function ListingSection() {
 
   const session = useSession()
 
-  //Handle for creating a form submission to create a new listing
+//Handle for creating a form submission to create a new listing
   const handleCreateListing = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!session?.user?.id) {
-      alert("User not logged in.")
-      return
+    const formData = new FormData(e.target);
+    const file = formData.get("image"); //get image file form formData
+    let image_url = null;
+
+    //Checking if user is logged in
+     if (!session?.user?.id) {
+        alert("User not logged in.");
+        return;
+      }
+
+    //Upload image if provided
+      if (file instanceof File && file.size > 0) {
+        const { url, error } = await uploadImage(file, user.id);
+        if (error) return console.error(error);
+        image_url = url;
+      }
+
+      formData.set("image_url", image_url);
+      formData.delete("image"); //Remove raw file from formData
+
+      const { data, error } = await createListing(formData, user.id);
+
+    //Error handling
+      if (error) {
+        console.error("Error creating listing:", error);
+        alert("There was an error creating the listing. Try again later.");
+      } else {
+        alert("Listing created successfully!");
+        handleBackToDashboard();
+      }
     }
-
-    const formData = new FormData(e.target)
-    //Add image upload handling here if you're uploading to Supabase Storage separately
-
-    const { data, error } = await createListing(formData, session?.user?.id)
-
-    if (error) {
-      console.error("Error creating listing:", error)
-      alert("There was an error creating the listing.")
-    } else {
-      alert("Listing created successfully!")
-      handleBackToDashboard()
-    }
-  }
 
   const handleImageChange = (e) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleBackToDashboard = () => {
     setCurrentView("dashboard")
     setImagePreview(null)
   }
+
 
   // Dashboard view with action buttons
   const renderDashboard = () => (

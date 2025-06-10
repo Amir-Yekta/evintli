@@ -28,7 +28,7 @@ export const createListing = async (formData: FormData, user_id: string) => {
     num_of_staff: Number(numOfStaff),
     num_of_guests: Number(numOfGuests),
     description,
-    image_url,
+    image_url: image_url || null,
   }])
 
   return { data, error }
@@ -65,3 +65,22 @@ export const deleteListing = async (id: string) => {
 
   return { data, error }
 }
+
+//Users upload image
+export async function uploadImage(file: File, userId: string) {
+  const fileExt = file.name.split(".").pop()
+  const filePath = `public/${userId}/${Date.now()}.${fileExt}`
+
+  const { data, error } = await supabase.storage
+    .from("listing-images")
+    .upload(filePath, file)
+
+  if (error) return { error }
+
+  const { data: publicUrlData } = supabase.storage
+    .from("listing-images")
+    .getPublicUrl(filePath)
+
+  return { url: publicUrlData?.publicUrl, error: null }
+}
+
