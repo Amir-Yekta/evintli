@@ -149,7 +149,7 @@ useEffect(() => { //updates the UI after use edits their listing
     } else {
       alert("Listing deleted successfully!");
       setListings(listings.filter((l) => l.id !== listing.id));
-      setCurrentView("dashboard");
+      setCurrentView("delete");
     }
   }
 
@@ -698,7 +698,7 @@ useEffect(() => { //updates the UI after use edits their listing
                   <p className="text-gray-600 mt-1">{listing.description?.slice(0, 80)}...</p>
                   <button
                     onClick={() => handleDeleteListing(listing)}
-                    className="mt-4 inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition"
+                    className="mt-4 inline-flex items-center px-3 py-2 bg-red-500 text-white text-sm font-medium rounded hover:bg-red-700 transition"
                   >
                     <FiEdit className="mr-2" /> Delete
                   </button>
