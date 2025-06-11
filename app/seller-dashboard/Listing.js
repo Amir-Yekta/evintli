@@ -105,7 +105,7 @@ export default function ListingSection() {
     }
   }
 
-useEffect(() => {
+useEffect(() => { //updates the UI after use edits their listing
   const fetchUpdatedListings = async () => {
     const id = session?.user?.id;
     const { data, error } = await getUserListings(id);
