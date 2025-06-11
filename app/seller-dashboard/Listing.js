@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { FiPlus, FiEdit, FiTrash2, FiArrowLeft } from "react-icons/fi"
 import { createListing } from "../lib/services/listing_crud"
+import { getUserListings, updateListing, deleteListing } from "../lib/services/listing_crud"
 import { useSession } from "@supabase/auth-helpers-react"
 import { uploadImage } from "../lib/services/listing_crud"
 
@@ -127,7 +128,7 @@ export default function ListingSection() {
     setImagePreview(null)
   }
 
-  useEffect(() => {
+  useEffect(() => { //2 changes for testing
     const fetchListings = async () => {
       setLoading(true);
 
