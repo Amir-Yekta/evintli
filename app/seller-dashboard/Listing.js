@@ -128,21 +128,26 @@ export default function ListingSection() {
   }
 
   useEffect(() => {
-  const fetchListings = async () => {
-    if (!session) return
-    setLoading(true)
+    const fetchListings = async () => {
+      setLoading(true);
 
-    const { data, error } = await getUserListings(session.user.id)
-    if (error) {
-      console.error("Error fetching listings:", error)
-    } else {
-      setListings(data)
+      const id = session?.user?.id;
+      const { data, error } = await getUserListings(id);
+
+      if (error) {
+        console.error("Error fetching listings:", error);
+      } else {
+        console.log("Fetched listings:", data);
+        setListings(data || []);
+      }
+
+      setLoading(false);
+    };
+
+    if (session) {
+      fetchListings();
     }
-    setLoading(false)
-  }
-
-  fetchListings()
-}, [session])
+  }, [session]);
 
 
   // Dashboard view with action buttons
