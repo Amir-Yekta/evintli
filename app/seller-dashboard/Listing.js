@@ -13,8 +13,9 @@ export default function ListingSection() {
   const [imagePreview, setImagePreview] = useState(null)
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refresh, setRefresh] = useState(false)
 
-  const session = useSession()
+  const session = useSession();
 
 //Handle for creating a form submission to create a new listing
   const handleCreateListing = async (e) => {
@@ -69,10 +70,11 @@ export default function ListingSection() {
     setSelectedListing(listing) 
   }
 
-  //I NEED TO ADD USEEFFECT SO THAT THE UI UPDATES WHEN THE LISTING IS UPDATED. ONLY THE SUPABASE TABLE GETS UPDATED AND NOT THE UI
+
   //handles the form submission for updating a listing
   const handleUpdateListing = async (e, listingId) => {
     e.preventDefault()
+
     const formData = new FormData(e.target)
       
     const updatedListing = {
@@ -99,9 +101,28 @@ export default function ListingSection() {
       setCurrentView("edit")
       setSelectedListing(null)
       setImagePreview(null) 
+      setRefresh(true)
     }
   }
 
+useEffect(() => {
+  const fetchUpdatedListings = async () => {
+    const id = session?.user?.id;
+    const { data, error } = await getUserListings(id);
+
+    if (error) {
+      console.error("Error fetching updated listings:", error.message);
+    } else {
+      setListings(data || []);
+    }
+
+    setRefresh(false); //reset
+  };
+
+  if (refresh) {
+    fetchUpdatedListings();
+  }
+}, [refresh]);
 
   
   const handleCancelEdit = () => {
