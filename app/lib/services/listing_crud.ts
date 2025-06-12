@@ -65,21 +65,47 @@ export const deleteListing = async (id: string) => {
   return { data, error }
 }
 
-//Users upload image
-export async function uploadImage(file: File, userId: string) {
-  const fileExt = file.name.split(".").pop()
-  const filePath = `public/${userId}/${Date.now()}.${fileExt}`
+//Upload users image to Supabase storage
+export async function uploadImage(file, user_id) {
+  if (!file) {
+    console.error("[uploadImage] No file provided");
+    return { url: null, error: new Error("No file provided") };
+  }
+  if (!user_id) {
+    console.error("[uploadImage] No userId provided");
+    return { url: null, error: new Error("No userId provided") };
+  }
 
-  const { data, error } = await supabase.storage
-    .from("listing-images")
-    .upload(filePath, file)
+  try {
+    const fileExt = file.name.split('.').pop() || 'png';
+    // Make filePath very unique to avoid duplicates and upsert issues
+    const filePath = `${user_id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
 
-  if (error) return { error }
+    console.log(`[uploadImage] Uploading file to path: ${filePath}`);
 
-  const { data: publicUrlData } = supabase.storage
-    .from("listing-images")
-    .getPublicUrl(filePath)
+    const { data, error } = await supabase.storage
+      .from('images')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      });
 
-  return { url: publicUrlData?.publicUrl, error: null }
+    if (error) {
+      console.error("[uploadImage] Upload error:", JSON.stringify(error));
+      return { url: null, error };
+    }
+
+    // Get public URL for uploaded file
+    const { data: publicUrlData } = supabase.storage
+      .from('images')
+      .getPublicUrl(filePath);
+
+    console.log("[uploadImage] Uploaded file public URL:", publicUrlData.publicUrl);
+
+    return { url: publicUrlData.publicUrl, error: null };
+  } catch (err) {
+    console.error("[uploadImage] Unexpected error:", err);
+    return { url: null, error: err };
+  }
 }
-

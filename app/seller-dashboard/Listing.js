@@ -14,55 +14,72 @@ export default function ListingSection() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
   const [refresh, setRefresh] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const session = useSession();
 
 //Handle for creating a form submission to create a new listing
-  const handleCreateListing = async (e) => {
+  const handleCreateListing = async (e) => { //2 changes for testing
     e.preventDefault();
 
-    const formData = new FormData(e.target);
-    const file = formData.get("image"); //get image file form formData
-    let image_url = null;
+  const formData = new FormData(e.target);
+  let image_url = null;
+
+  const fileInput = e.target.querySelector('input[name="image_url"]'); //gets file input directly from the <form>
+  const file = fileInput?.files?.[0];
 
     //Checking if user is logged in
-     if (!session?.user?.id) {
-        alert("User not logged in.");
-        return;
-      }
+    //  if (!session?.user?.id) {
+    //     alert("User not logged in.");
+    //     return;
+    //   }
 
     //Upload image if provided
-      if (file instanceof File && file.size > 0) {
-        const { url, error } = await uploadImage(file, user.id);
-        if (error) return console.error(error);
-        image_url = url;
-      }
+  if (file && file.size > 0) {
+    const { url, error } = await uploadImage(file, session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec" || "a125c4e4-f827-4585-8a5c-c9be9f3cad3a");
 
-      formData.set("image_url", image_url);
-      formData.delete("image"); //Remove raw file from formData
+    if (error) {
+      console.error("Image Upload Error:", error);
+      alert("Image upload failed.");
+      return;
+    }
 
-      const { data, error } = await createListing(formData, session?.user?.id);
+    image_url = url;
+  }
+
+  formData.set("image_url", image_url);
+
+  const { data, error } = await createListing(formData, session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec" || "a125c4e4-f827-4585-8a5c-c9be9f3cad3a");
 
     //Error handling
-      if (error) {
+      if (error) 
+      {
         console.error("Error creating listing:", error);
         alert("There was an error creating the listing.");
-      } else {
+      } 
+      else 
+      {
         alert("Listing created successfully!");
         handleBackToDashboard();
       }
-    }
+    };
+
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+
+    if (!file) {
+      setImagePreview(null);
+      return;
+    }
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreview(reader.result);
+      setImagePreview(reader.result); //imagePreview is set to the base64 data URL of the image
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file); 
   };
+
 
   const handleEditListing = (listing) => {
     console.log("Edit listing:", listing)
@@ -409,7 +426,7 @@ useEffect(() => { //updates the UI after use edits their listing
                   {imagePreview && (
                     <div className="w-32 h-32 rounded-lg overflow-hidden border-2 border-green-200 shadow-lg">
                       <img
-                        src={imagePreview || "/placeholder.svg"}
+                        src={imagePreview}
                         alt="Preview"
                         className="w-full h-full object-cover"
                       />
@@ -664,7 +681,6 @@ useEffect(() => { //updates the UI after use edits their listing
       </div>
     </div>
   )
-
 
   // Delete listings view
   const renderDeleteListings = () => (
