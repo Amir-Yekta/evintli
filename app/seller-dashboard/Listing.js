@@ -14,7 +14,6 @@ export default function ListingSection() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
   const [refresh, setRefresh] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null);
 
   const session = useSession();
 
@@ -123,8 +122,8 @@ export default function ListingSection() {
   }
 
 useEffect(() => { //updates the UI after use edits their listing
-  const fetchUpdatedListings = async () => {
-    const id = session?.user?.id;
+  const fetchUpdatedListings = async () => { //1 change for testing
+    const id = session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec"; //default id for testing
     const { data, error } = await getUserListings(id);
 
     if (error) {
