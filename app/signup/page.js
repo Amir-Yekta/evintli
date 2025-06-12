@@ -1,28 +1,44 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { supabase } from '../../lib/supabase';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useState } from 'react';
+import googleLogo from '../../public/google_g_logo.svg'
+import logo from '../../public/logo.svg'
 
 export default function SignupPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', accepted: false });
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    accepted: false,
+  });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
 
-  const handleChange = (e) => {
+  /** @param {Event} e */
+  function handleChange(e) {
+    // This applies to all the properties of the Event object
+    /** @type {HTMLInputElement} */
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
-  };
+    setForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  }
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  
+  /** @param {Event} e */
+  async function handleSubmit(e) {
+    e.preventDefault(); //prevent page refresh
+    setError(''); //reset errors
 
     if (!form.accepted) {
       return setError('You must accept the terms.');
@@ -30,35 +46,45 @@ export default function SignupPage() {
     if (form.password !== form.confirmPassword) {
       return setError('Passwords do not match.');
     }
+    // validate form
+    if (!form.email || !form.password || !form.confirmPassword)
+        return setError('Please fill in all fields.');
+
+    if (form.password !== form.confirmPassword)
+        return setError('Passwords do not match.');
+
+    if (!form.accepted)
+        return setError('You must accept the terms and conditions.');
 
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        password: form.password,
-      }),
-    });
+      body: JSON.stringify(form)
+    })
 
+    /** @type {{ error: string }} */
     const data = await res.json();
-    if (!res.ok) {
-      return setError(data.error || 'Something went wrong.');
-    }
+
+    if (!res.ok)
+      return setError(data.error || 'Something went wrong');
 
     router.push('/login');
-  };
+  }
+
+  async function handleGoogleSignIn() {
+    setError('')
+    const { /* data, */ error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/home` }
+    });
+
+    if (error) setError(error.message)
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <Image
-          src="/Group 420047.svg"
-          alt="Eventli Logo"
-          width={100}
-          height={100}
-          className="h-10 mb-6 mx-auto"
-        />
-        <h1 className="text-2xl text-black font-bold mb-6 text-center">Create an account</h1>
+    <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900'>
+      <form onSubmit={handleSubmit} className='bg-white p-8 rounded-2xl shadow-lg w-full max-w-md'>
+        <Image src={logo} alt='Eventli Logo' className='h-10 mb-6 mx-auto' width={101} height={37} />
+        <h1 className='text-2xl text-black font-bold mb-6 text-center'>Create an account</h1>
 
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-left mb-1 mt-1">
           Email
@@ -133,23 +159,27 @@ export default function SignupPage() {
         {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
 
         <button className="bg-blue-600 text-white py-2 rounded w-full font-semibold">Sign-up</button>
+
         <button
-          type="button"
-          className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+          type='button'
+          className='mt-4 w-full flex items-center justify-center py-2 px-4 border border-gray-300
+            rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50'
+          onClick={handleGoogleSignIn}
         >
-          <img
-            src="https://developers.google.com/identity/images/g-logo.png"
-            alt="Google sign-in"
-            width={20}
-            height={20}
-            className="mr-2"
+          <Image
+            src={googleLogo}
+            alt='Sign in with Google'
+            className='h-5 w-5 mr-2'
+            id='google-sign-in'
+            width={80}
+            height={80}
           />
           Sign up with Google
         </button>
-        <p className="text-center text-sm mt-4 text-black">
-          Already have an account? <a href="/login" className="text-blue-600 font-medium">Login</a>
+        <p className='text-center text-sm mt-4 text-black'>
+          Already have an account? <a href='/login' className='text-blue-600 font-medium'>Login</a>
         </p>
       </form>
     </div>
   );
-}
+};

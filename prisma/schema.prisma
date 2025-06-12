@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // Models: User, Listing, Service, Schedule, Booking
@@ -20,52 +21,54 @@ enum UserRole {
   ADMIN
 }
 
-model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
+model Profile {
+  id        String     @id @default(uuid())
+  email     String     @unique
   password  String
   name      String?
-  role      UserRole @default(CUSTOMER) // Default role is CUSTOMER
-  createdAt DateTime @default(now())
+  role      UserRole   @default(CUSTOMER) // Default role is CUSTOMER
+  createdAt DateTime   @default(now()) @map("created_at")
 
-  listing Listing[] // one-to-many relationship with Listing
+  listings  Listing[] // one-to-many relationship with Listing (changed from 'listing' to 'listings' for clarity)
+  schedules Schedule[] // User can have multiple schedules
+	@@map("User")
 }
 
 // adding other models: listing, schedule, booking, photo
 
 model Listing {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String  @db.ObjectId
+  id           String  @id @default(uuid())
+  userId       String
   name         String
   event_type   String?
   cuisine_type String?
   capacity     Int?
-  schedule_id  String  @db.ObjectId // foreign key to Schedule
   description  String?
   floor_price  Float?
   roof_price   Float?
-  photo        Photo[] // array of photos
+  photos       Photo[] // array of photos (changed from 'photo' to 'photos' for clarity)
 
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now()) @map("created_at")
 
-  user     User       @relation(fields: [userId], references: [id])
-  Schedule Schedule[]
+  user      Profile    @relation(fields: [userId], references: [id])
+  schedules Schedule[] // Listing can have multiple schedules
 }
 
 model Schedule {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  listingId String   @db.ObjectId
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  listingId String   @map("listing_id")
   date      DateTime
   notes     String?
 
-  listing Listing @relation(fields: [userId], references: [id])
+  user    Profile    @relation(fields: [userId], references: [id])
+  listing Listing    @relation(fields: [listingId], references: [id])
 }
 
 model Photo {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String  @id @default(uuid())
   url       String
-  listingId String @db.ObjectId
+  listingId String  @map("listing_id")
 
-  listing Listing @relation(fields: [listingId], references: [id])
+  listing Listing   @relation(fields: [listingId], references: [id])
 }
