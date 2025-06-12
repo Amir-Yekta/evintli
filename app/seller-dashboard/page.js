@@ -2,9 +2,9 @@
 
 import React, {useState} from 'react';
 import ListingSection from './Listing';
-import ScheduleSection from './schedule';
-import CalendarSection from './calendar';
-import SupportSection from './support';
+import ScheduleSection from './schedule/schedule';
+import CalendarSection from './calendar/calendar';
+import SupportSection from './support/support';
 import LogoutSection from './logout';
 
 export default function SellerDashboardPage(){
