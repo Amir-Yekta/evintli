@@ -14,12 +14,11 @@ export default function ListingSection() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
   const [refresh, setRefresh] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null);
 
   const session = useSession();
 
 //Handle for creating a form submission to create a new listing
-  const handleCreateListing = async (e) => { //2 changes for testing
+  const handleCreateListing = async (e) => {
     e.preventDefault();
 
   const formData = new FormData(e.target);
@@ -29,14 +28,14 @@ export default function ListingSection() {
   const file = fileInput?.files?.[0];
 
     //Checking if user is logged in
-    //  if (!session?.user?.id) {
-    //     alert("User not logged in.");
-    //     return;
-    //   }
+     if (!session?.user?.id) {
+        alert("User not logged in.");
+        return;
+      }
 
     //Upload image if provided
   if (file && file.size > 0) {
-    const { url, error } = await uploadImage(file, session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec" || "a125c4e4-f827-4585-8a5c-c9be9f3cad3a");
+    const { url, error } = await uploadImage(file, session?.user?.id);
 
     if (error) {
       console.error("Image Upload Error:", error);
@@ -49,7 +48,7 @@ export default function ListingSection() {
 
   formData.set("image_url", image_url);
 
-  const { data, error } = await createListing(formData, session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec" || "a125c4e4-f827-4585-8a5c-c9be9f3cad3a");
+  const { data, error } = await createListing(formData, session?.user?.id);
 
     //Error handling
       if (error) 
@@ -104,7 +103,7 @@ export default function ListingSection() {
       num_of_staff: Number(formData.get("numOfStaff")),
       num_of_guests: Number(formData.get("numOfGuests")),
       description: formData.get("description"),
-      image_url: formData.get("image_url") || null, // optional
+      image_url: formData.get("image_url") || null, //optional
     }
 
     const { data, error } = await updateListing(listingId, updatedListing)
@@ -175,11 +174,11 @@ useEffect(() => { //updates the UI after use edits their listing
     setImagePreview(null)
   }
 
-  useEffect(() => { //2 changes for testing
+  useEffect(() => {
     const fetchListings = async () => {
       setLoading(true);
 
-      const id = session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec";
+      const id = session?.user?.id;
       const { data, error } = await getUserListings(id);
 
       if (error) {
@@ -192,9 +191,9 @@ useEffect(() => { //updates the UI after use edits their listing
       setLoading(false);
     };
 
-    //if (session) {
+    if (session) {
       fetchListings();
-    //}
+    }
   }, [session]);
 
 
