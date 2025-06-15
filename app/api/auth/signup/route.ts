@@ -1,13 +1,15 @@
 import { signUp } from '../../../../lib/supabase_auth';
 import { createProfile } from '../../../../lib/supabase_crud';
 
-/** @param {Request} req */
-export async function POST(req) {
+type Credentials = {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export async function POST(req: Request) {
   try {
-    /** @type
-     * {{ name: string, email: string, password: string }}
-     */
-    const { name, email, password } = await req.json();
+    const { name, email, password }: Credentials = await req.json();
 
     if (!email || !password)
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });

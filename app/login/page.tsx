@@ -14,27 +14,21 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
-  /** @param {Event} e */
-  function handleChange(e) {
-    /** @type {HTMLInputElement} */
-    const target = e.target;
-    return setForm({ ...form, [target.name]: target.value });
+  function handleChange(e: Event) {
+    const { name, value } = e.target as HTMLInputElement;
+    return setForm({ ...form, [name]: value });
   }
 
-  /** @param {Event} e */
-  async function handleSubmit(e) {
+  async function handleSubmit(e: Event) {
     e.preventDefault();
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(form)
     });
 
-    /** @type {{ error: string }} */
-    const data = await res.json();
+    const data: { error: string } = await res.json();
 
     if (!res.ok)
       return setError(data.error || 'Something went wrong');
@@ -56,7 +50,7 @@ export default function LoginPage() {
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900'>
-      <form onSubmit={handleSubmit} className='bg-white p-8 rounded-2xl shadow-lg w-full max-w-md'>
+      <form onSubmit={e => handleSubmit(e as any as Event)} className='bg-white p-8 rounded-2xl shadow-lg w-full max-w-md'>
         <Image src={logo} alt='Eventli Logo' className='h-10 mb-6 mx-auto' width={101} height={37} />
         <h1 className='text-2xl text-black font-bold mb-6 text-center'>Login to your account</h1>
 
@@ -66,7 +60,7 @@ export default function LoginPage() {
           name='email'
           placeholder='Email'
           value={form.email}
-          onChange={handleChange}
+          onChange={e => handleChange(e as any as Event)}
           className='input placeholder-gray-500 text-black'
         />
 
@@ -77,11 +71,11 @@ export default function LoginPage() {
             type={showPassword ? 'text' : 'password'}
             placeholder="Re-enter your password"
             value={form.password}
-            onChange={handleChange}
-            className="input placeholder-gray-500 text-black pr-10"
+            onChange={e => handleChange(e as any as Event)}
+            className='input placeholder-gray-500 text-black pr-10'
           />
           <button
-            type="button"
+            type='button'
             onClick={togglePasswordVisibility}
             className="absolute inset-y-0 right-0 pr-3 pb-3 flex items-center text-sm leading-5"
           >

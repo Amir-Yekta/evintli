@@ -20,23 +20,19 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
 
-  /** @param {Event} e */
-  function handleChange(e) {
-    // This applies to all the properties of the Event object
-    /** @type {HTMLInputElement} */
-    const { name, value, type, checked } = e.target;
+  function handleChange(e: Event) {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setForm(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : value
     }));
   }
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
-  
-  /** @param {Event} e */
-  async function handleSubmit(e) {
+
+  async function handleSubmit(e: Event) {
     e.preventDefault(); //prevent page refresh
     setError(''); //reset errors
 
@@ -82,7 +78,7 @@ export default function SignupPage() {
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900'>
-      <form onSubmit={handleSubmit} className='bg-white p-8 rounded-2xl shadow-lg w-full max-w-md'>
+      <form onSubmit={e => handleSubmit(e as any as Event)} className='bg-white p-8 rounded-2xl shadow-lg w-full max-w-md'>
         <Image src={logo} alt='Eventli Logo' className='h-10 mb-6 mx-auto' width={101} height={37} />
         <h1 className='text-2xl text-black font-bold mb-6 text-center'>Create an account</h1>
 
@@ -94,7 +90,7 @@ export default function SignupPage() {
           name="email"
           placeholder="Email"
           value={form.email}
-          onChange={handleChange}
+          onChange={e => handleChange(e as any as Event)}
           className="input placeholder-gray-500 text-black"
         />
 
@@ -108,7 +104,7 @@ export default function SignupPage() {
             type={showPassword ? 'text' : 'password'}
             placeholder="Create a password"
             value={form.password}
-            onChange={handleChange}
+            onChange={e => handleChange(e as any as Event)}
             className="input placeholder-gray-500 text-black pr-10"
           />
           <button
@@ -130,7 +126,7 @@ export default function SignupPage() {
             type={showConfirmPassword ? 'text' : 'password'}
             placeholder="Re-enter your password"
             value={form.confirmPassword}
-            onChange={handleChange}
+            onChange={e => handleChange(e as any as Event)}
             className="input placeholder-gray-500 text-black pr-10"
           />
           <button
@@ -147,7 +143,7 @@ export default function SignupPage() {
             type="checkbox"
             name="accepted"
             checked={form.accepted}
-            onChange={handleChange}
+            onChange={e => handleChange(e as any as Event)}
             className="mr-2"
           />
           <p className="text-gray-400">
