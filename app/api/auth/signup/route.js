@@ -11,6 +11,14 @@ export async function POST(req) {
 
     if (!email || !password)
       return Response.json({ error: 'Email and password are required.' }, { status: 400 });
+<<<<<<< Updated upstream
+=======
+    }
+    // Removed validation for nam
+    // Removed validation for role
+    // Removed validation for companyName
+    // --- End Input Validations ---
+>>>>>>> Stashed changes
 
     const { user, error } = await signUp({ email, password })
 

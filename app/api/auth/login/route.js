@@ -2,6 +2,10 @@ import { login } from '../../../../lib/supabase_auth';
 
 /** @param {Request} req */
 export async function POST(req) {
+<<<<<<< Updated upstream
+=======
+  const supabase = await createSupabaseServerClient(); // Added awai
+>>>>>>> Stashed changes
   try {
     /** @type {{ email: string, password: string }} */
     const { email, password } = await req.json();

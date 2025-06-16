@@ -1,12 +1,9 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useState } from 'react';
-import { supabase } from '../../lib/supabase';
-import googleLogo from '../../public/google_g_logo.svg'
-import logo from '../../public/logo.svg'
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -14,62 +11,53 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  /** @param {Event} e */
-  function handleChange(e) {
-    /** @type {HTMLInputElement} */
-    const target = e.target;
-    return setForm({ ...form, [target.name]: target.value });
-  }
-
-  /** @param {Event} e */
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await fetch('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify(form)
+      body: JSON.stringify(form),
     });
 
-    /** @type {{ error: string }} */
     const data = await res.json();
-
-    if (!res.ok)
-      return setError(data.error || 'Something went wrong');
-
-    // You can store the token in cookies or localStorage here
-    // localStorage.setItem('token', data.token);
+    if (!res.ok) return setError(data.error || 'Something went wrong');
     router.push('/home');
-  }
-
-  async function handleGoogleSignIn() {
-    setError('')
-    const { /* data, */ error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/home` }
-    });
-
-    if (error) setError(error.message)
-  }
+  };
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900'>
-      <form onSubmit={handleSubmit} className='bg-white p-8 rounded-2xl shadow-lg w-full max-w-md'>
-        <Image src={logo} alt='Eventli Logo' className='h-10 mb-6 mx-auto' width={101} height={37} />
-        <h1 className='text-2xl text-black font-bold mb-6 text-center'>Login to your account</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-teal-900">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <Image
+          src="/Group 420047.svg"
+          alt="Eventli Logo"
+          width={100}
+          height={100}
+          className="h-10 mb-6 mx-auto"
+        />
+        <h1 className="text-2xl text-black font-bold mb-6 text-center">Login to your account</h1>
 
-        <label htmlFor='email' className='block text-sm font-medium text-gray-700 text-left mb-1'>Email</label>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-left mb-1">
+          Email
+        </label>
         <input
-          id='email'
-          name='email'
-          placeholder='Email'
+          id="email"
+          name="email"
+          placeholder="Email"
           value={form.email}
           onChange={handleChange}
-          className='input placeholder-gray-500 text-black'
+          className="input placeholder-gray-500 text-black"
         />
 
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-left mb-1 mt-4">
+          Password
+        </label>
         <div className="relative">
           <input
             id="password"
@@ -97,26 +85,22 @@ export default function LoginPage() {
         <button className="bg-blue-600 text-white py-2 rounded w-full font-semibold mt-6">
           Login
         </button>
-
         <button
-          type='button'
-          className='mt-4 w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50'
-          onClick={handleGoogleSignIn}
+          type="button"
+          className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
-          <Image
-            src={googleLogo}
-            alt='Sign in with Google'
-            className='h-5 w-5 mr-2'
-            id='google-sign-in'
-            width={80}
-            height={80}
+          <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google sign-in"
+            width={20}
+            height={20}
+            className="mr-2"
           />
           Sign in with Google
         </button>
-
-        <p className='text-center text-black text-sm mt-4'>
-          Don’t have an account?{' '}
-          <a href='/signup' className='text-blue-600 font-medium'>
+        <p className="text-center text-black text-sm mt-4">
+          Don’t have an account?{" "}
+          <a href="/signup" className="text-blue-600 font-medium">
             Sign-up
           </a>
         </p>
