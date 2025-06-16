@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Listing from "./listing"; // Adjust the import path as necessary
 import { FaBirthdayCake } from "react-icons/fa";
@@ -62,9 +62,19 @@ export default function HomePage() {
   // State to manage the search query
   const [query, setQuery] = useState('');
   const [filteredListings, setFilteredListings] = useState(listingLists);
+  const [mounted, setMounted] = useState(false);
 
   // State to manage the selected navigation category
   const [selectedCategory, setSelectedCategory] = useState('Home');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return null;
+  }
 
   /** @param {string} category */
   function handleNavigation(category) {
@@ -113,11 +123,10 @@ export default function HomePage() {
     <div className="min-h-screen min-w-md bg-gray-50">
       {/* Top Navigation Bar */}
       <div className='flex flex-auto items-center justify-between gap-x-60 px-20 py-4 bg-white shadow-md'>
-        {/* Left: Company Name */}
-        <Image
+        {/* Left: Company Name */}        <Image
           className='relative'
           id='logo'
-          src={logo}
+          src="/logo.svg"
           alt='Evintli Logo'
           width={101}
           height={37}
@@ -144,29 +153,26 @@ export default function HomePage() {
         <div className='relative flex flex-[3%] flex-row items-center gap-x-4'>
           <button className='px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-indigo-700'>
             Add Listing
-          </button>
-          <div
-            className={`${sty.notification} top-[0.5px] left-[0.5rem] shadow-effect`}
+          </button>          <div
+            className="relative w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow"
             id='notifications'
-          >
-            <Image
-              className='relative top-[7.5px] left-[8px]'
+          >            <Image
+              className='relative'
               id='bell'
-              src={bell}
+              src="/bell.svg"
               alt='bell'
               width={24}
               height={25}
             />
           </div>
           <div
-            className={`${sty.profile} top-[0.5px] left-[0.5rem] shadow-effect`}
+            className="relative w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow"
             id='profile'
-          >
-            <Image
-              className='relative top-[7.5px] left-[8px]'
+          >            <Image
+              className='relative'
               id='profile'
               alt='Profile'
-              src={profile}
+              src="/profile.svg"
               width={22}
               height={23}
             />
