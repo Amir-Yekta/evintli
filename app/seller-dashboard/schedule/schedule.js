@@ -3,6 +3,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from "@supabase/auth-helpers-react"
+import { saveWeeklyAvailability, addDateException } from "../../lib/services/schedule_crud"
 
 export default function ScheduleSection() {
   const [dateRange, setDateRange] = useState({
@@ -26,11 +28,13 @@ export default function ScheduleSection() {
 
   const [blockType, setBlockType] = useState('Open'); // 'Open' or 'Block'
 
+  const session = useSession();
+
   const handleDateChange = (field, value) => {
     // Allow only numbers and limit length
     const numericValue = value.replace(/[^0-9]/g, '');
-    let maxLength = 2;
-    if (field.includes('Year')) maxLength = 2; // YY
+    let maxLength;
+    if (field.includes('Year')) maxLength = 4; // YYYY
     else if (field.includes('Month')) maxLength = 2; // MM
     else if (field.includes('Day')) maxLength = 2; // DD
 
@@ -47,11 +51,25 @@ export default function ScheduleSection() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Date Range:', dateRange);
     console.log('Availability:', availability);
     console.log('Block Type:', blockType);
-    // Add your submit logic here
+    
+    const userId = session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec"; //HARDCODED USER ID
+
+    //saves weekly availability to database
+    const { error: availErr } = await saveWeeklyAvailability(userId, availability);
+    if (availErr) return alert("Error saving weekly availability");
+
+    //saves date exception to database
+    const startDate = `20${dateRange.startYear}-${dateRange.startMonth}-${dateRange.startDay}`;
+    const endDate   = `20${dateRange.endYear}-${dateRange.endMonth}-${dateRange.endDay}`;
+
+    const { error: dateErr } = await addDateException(userId, startDate, endDate, blockType);
+    if (dateErr) return alert("Error saving date range");
+
+      alert('Schedule updated successfully!');
   };
 
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
