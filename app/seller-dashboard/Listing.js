@@ -14,24 +14,60 @@ export default function ListingSection() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
   const [refresh, setRefresh] = useState(false)
+  const [formErrors, setFormErrors] = useState({});
 
   const session = useSession();
 
 //Handle for creating a form submission to create a new listing
   const handleCreateListing = async (e) => { //2 changes for testing
     e.preventDefault();
-
-  const formData = new FormData(e.target);
-  let image_url = null;
-
-  const fileInput = e.target.querySelector('input[name="image_url"]'); //gets file input directly from the <form>
-  const file = fileInput?.files?.[0];
-
+  
     //Checking if user is logged in
     //  if (!session?.user?.id) {
     //     alert("User not logged in.");
     //     return;
     //   }
+
+  const form = e.target; 
+  const formData = new FormData(e.target);
+
+  const rawValues = Object.fromEntries(formData);
+  const {
+    title,
+    city,
+    address,
+    priceRange,
+    eventType,
+    servingStyle,
+    numOfStaff,
+    numOfGuests,
+    description,
+  } = rawValues;
+
+  //Validation
+  const errors = {};
+  if (!title?.trim()) errors.title = "Title is required.";
+  if (!city?.trim()) errors.city = "City is required.";
+  if (!address?.trim()) errors.address = "Address is required.";
+  if (!priceRange?.trim()) errors.priceRange = "Price range is required.";
+  if (!eventType?.trim()) errors.eventType = "Event type is required.";
+  if (!servingStyle?.trim()) errors.servingStyle = "Serving style is required.";
+  if (!numOfStaff?.trim()) errors.numOfStaff = "Number of staff is required.";
+  if (!numOfGuests?.trim()) errors.numOfGuests = "Number of guests is required.";
+  if (!description?.trim()) errors.description = "Description is required.";
+
+  if (Object.keys(errors).length > 0) {
+    setFormErrors(errors);
+    return;
+  } else {
+    setFormErrors({});
+  }
+
+
+  //constants for image_url
+  let image_url = null;
+  const fileInput = e.target.querySelector('input[name="image_url"]'); //gets file input directly from the <form>
+  const file = fileInput?.files?.[0];
 
     //Upload image if provided
   if (file && file.size > 0) {
@@ -48,6 +84,7 @@ export default function ListingSection() {
 
   formData.set("image_url", image_url);
 
+  //Create listing object
   const { data, error } = await createListing(formData, session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec" || "a125c4e4-f827-4585-8a5c-c9be9f3cad3a");
 
     //Error handling
@@ -59,6 +96,7 @@ export default function ListingSection() {
       else 
       {
         alert("Listing created successfully!");
+        setRefresh(true);
         handleBackToDashboard();
       }
     };
@@ -104,6 +142,25 @@ export default function ListingSection() {
       num_of_guests: Number(formData.get("numOfGuests")),
       description: formData.get("description"),
       image_url: formData.get("image_url") || null, // optional
+    }
+
+    //Validation
+    const errors = {};
+    if (!updatedListing.title?.trim()) errors.title = "Title is required.";
+    if (!updatedListing.city?.trim()) errors.city = "City is required.";
+    if (!updatedListing.address?.trim()) errors.address = "Address is required.";
+    if (!updatedListing.price_range?.trim()) errors.priceRange = "Price range is required.";
+    if (!updatedListing.event_type?.trim()) errors.eventType = "Event type is required.";
+    if (!updatedListing.serving_style?.trim()) errors.servingStyle = "Serving style is required.";
+    if (!updatedListing.num_of_staff) errors.numOfStaff = "Number of staff is required.";
+    if (!updatedListing.num_of_guests) errors.numOfGuests = "Number of guests is required.";
+    if (!updatedListing.description?.trim()) errors.description = "Description is required.";
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    } else {
+      setFormErrors({});
     }
 
     const { data, error } = await updateListing(listingId, updatedListing)
@@ -294,8 +351,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="title"
                     name="title"
                     placeholder="Enter event title"
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.title
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.title && <p className="text-red-600 text-sm">{formErrors.title}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -307,8 +369,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       id="city"
                       name="city"
                       placeholder="Enter city"
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
-                    />
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.city
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
+                  />
+                  {formErrors.city && <p className="text-red-600 text-sm">{formErrors.city}</p>}
                   </div>
 
                   <div className="space-y-2">
@@ -319,8 +386,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       id="address"
                       name="address"
                       placeholder="Enter address"
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
-                    />
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.address
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
+                  />
+                  {formErrors.address && <p className="text-red-600 text-sm">{formErrors.address}</p>}
                   </div>
                 </div>
 
@@ -332,8 +404,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="priceRange"
                     name="priceRange"
                     placeholder="e.g. $1000-$2000"
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.priceRange
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.priceRange && <p className="text-red-600 text-sm">{formErrors.priceRange}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -344,8 +421,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="eventType"
                     name="eventType"
                     placeholder="e.g. Wedding, Corporate, Birthday"
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.eventType
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.eventType && <p className="text-red-600 text-sm">{formErrors.eventType}</p>}
                 </div>
               </div>
 
@@ -359,8 +441,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="servingStyle"
                     name="servingStyle"
                     placeholder="e.g. Buffet, Plated, Family Style"
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.servingStyle
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.servingStyle && <p className="text-red-600 text-sm">{formErrors.servingStyle}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -373,8 +460,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       name="numOfStaff"
                       type="number"
                       placeholder="Enter number"
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
-                    />
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.numOfStaff
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                        }`}
+                      />
+                      {formErrors.numOfStaff && <p className="text-red-600 text-sm">{formErrors.numOfStaff}</p>}
                   </div>
 
                   <div className="space-y-2">
@@ -386,8 +478,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       name="numOfGuests"
                       type="number"
                       placeholder="Enter number"
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
-                    />
+                      className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                        formErrors.numOfGuests
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                          : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                        }`}
+                      />
+                      {formErrors.numOfGuests && <p className="text-red-600 text-sm">{formErrors.numOfGuests}</p>}
                   </div>
                 </div>
 
@@ -399,8 +496,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="description"
                     name="description"
                     placeholder="Describe your event details"
-                    className="min-h-[120px] resize-none w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.description
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.description && <p className="text-red-600 text-sm">{formErrors.description}</p>}
                 </div>
               </div>
             </div>
@@ -531,8 +633,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="title"
                     name="title"
                     defaultValue={listing.title}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.title
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.title && <p className="text-red-600 text-sm">{formErrors.title}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -543,8 +650,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       id="city"
                       name="city"
                       defaultValue={listing.city}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                      className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                        formErrors.city
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                          : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                      }`}
                     />
+                    {formErrors.city && <p className="text-red-600 text-sm">{formErrors.city}</p>}
                   </div>
 
                   {/* Address */}
@@ -554,8 +666,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       id="address"
                       name="address"
                       defaultValue={listing.address}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                      className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                        formErrors.address
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                          : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                      }`}
                     />
+                    {formErrors.address && <p className="text-red-600 text-sm">{formErrors.address}</p>}
                   </div>
                 </div>
 
@@ -566,8 +683,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="priceRange"
                     name="priceRange"
                     defaultValue={listing.price_range}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.priceRange
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.priceRange && <p className="text-red-600 text-sm">{formErrors.priceRange}</p>}
                 </div>
 
                 {/* Event Type */}
@@ -577,8 +699,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="eventType"
                     name="eventType"
                     defaultValue={listing.event_type}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.eventType
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.eventType && <p className="text-red-600 text-sm">{formErrors.eventType}</p>}
                 </div>
               </div>
 
@@ -591,8 +718,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="servingStyle"
                     name="servingStyle"
                     defaultValue={listing.serving_style}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.servingStyle
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.servingStyle && <p className="text-red-600 text-sm">{formErrors.servingStyle}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -604,8 +736,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       name="numOfStaff"
                       type="number"
                       defaultValue={listing.num_of_staff}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
-                    />
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.numOfStaff
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
+                  />
+                  {formErrors.numOfStaff && <p className="text-red-600 text-sm">{formErrors.numOfStaff}</p>}
                   </div>
 
                   {/* Number of Guests */}
@@ -616,8 +753,13 @@ useEffect(() => { //updates the UI after use edits their listing
                       name="numOfGuests"
                       type="number"
                       defaultValue={listing.num_of_guests}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
-                    />
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.numOfGuests
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
+                  />
+                  {formErrors.numOfGuests && <p className="text-red-600 text-sm">{formErrors.numOfGuests}</p>}
                   </div>
                 </div>
 
@@ -628,8 +770,13 @@ useEffect(() => { //updates the UI after use edits their listing
                     id="description"
                     name="description"
                     defaultValue={listing.description}
-                    className="min-h-[120px] resize-none w-full p-3 border-2 border-gray-200 rounded-lg text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                    className={`w-full p-3 border-2 rounded-lg text-gray-800 transition-all duration-200 ${
+                      formErrors.description
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-green-500 focus:ring-green-200"
+                    }`}
                   />
+                  {formErrors.description && <p className="text-red-600 text-sm">{formErrors.description}</p>}
                 </div>
               </div>
             </div>
