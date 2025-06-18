@@ -10,8 +10,8 @@ export async function saveWeeklyAvailability(
   // build an array of rows to upsert
   const rows = Object.entries(availability).map(([day, status]) => ({
     user_id: userId,
-    day,          // Sunday .. Saturday 
-    status        // "Available" or "Busy"
+    day,          // Sunday .. Saturday
+    status: status === "Available" //BOOLEAN : 'Available' = true | 'Busy' = false
   }));
 
   // upsert all rows in one call
@@ -35,7 +35,7 @@ export async function addDateException(
       user_id:    userId,
       start_date: startDate,
       end_date:   endDate,
-      type        // enum: 'Open' | 'Block'
+      type: type === "Open" //BOOLEAN: 'Open' = true | 'Block' = false
     });
 
   return { error };
