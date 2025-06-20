@@ -13,15 +13,16 @@ export default function ScheduleSection() {
     startDay: '',
     endYear: '',
     endMonth: '',
-    endDay: ''
+    endDay: '',
   });
 
   const [availability, setAvailability] = useState({
+    //default values are set to 'Available'
     Sunday: 'Available',
     Monday: 'Available',
     Tuesday: 'Available',
     Wednesday: 'Available',
-    Thursday: 'Busy', // Matching the image for Thursday
+    Thursday: 'Available',
     Friday: 'Available',
     Saturday: 'Available'
   });
