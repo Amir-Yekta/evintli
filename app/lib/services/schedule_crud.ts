@@ -9,7 +9,7 @@ export async function saveWeeklyAvailability(
 ) {
   // build an array of rows to upsert
   const rows = Object.entries(availability).map(([day, status]) => ({
-    user_id: userId,
+    user_id: userId || "df64e4c5-5379-430b-b91f-c63f1dde6eec",  //HARDCODED FOR TESTING
     day,          // Sunday .. Saturday
     status: status === "Available" //BOOLEAN : 'Available' = true | 'Busy' = false
   }));
@@ -25,14 +25,14 @@ export async function saveWeeklyAvailability(
 //Adds the date exception to the database
 export async function addDateException(
   userId: string,
-  startDate: string,   // YYYY-MM-DD
-  endDate: string,     // YYYY-MM-DD
+  startDate: string,   // YY-MM-DD
+  endDate: string,     // YY-MM-DD
   type: "Open" | "Block"
 ) {
   const { error } = await supabase
     .from("date_exceptions")
     .insert({
-      user_id:    userId,
+      user_id:    userId || "df64e4c5-5379-430b-b91f-c63f1dde6eec", //HARDCODED FOR TESTING
       start_date: startDate,
       end_date:   endDate,
       type: type === "Open" //BOOLEAN: 'Open' = true | 'Block' = false

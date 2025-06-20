@@ -27,7 +27,7 @@ export default function ScheduleSection() {
     Saturday: 'Available'
   });
 
-  const [blockType, setBlockType] = useState('Open'); // 'Open' or 'Block'
+  const [blockType, setBlockType] = useState('Open'); // 'Open' or 'Block' | default to 'Open'
 
   const session = useSession();
 
@@ -35,9 +35,28 @@ export default function ScheduleSection() {
     // Allow only numbers and limit length
     const numericValue = value.replace(/[^0-9]/g, '');
     let maxLength;
-    if (field.includes('Year')) maxLength = 4; // YYYY
-    else if (field.includes('Month')) maxLength = 2; // MM
-    else if (field.includes('Day')) maxLength = 2; // DD
+    let valid = true;
+
+    //Validation for month and day format. If incorrect, state is not updated
+    if (field.includes('Year')) {
+      maxLength = 2;
+    } 
+    else if (field.includes('Month')) {
+      maxLength = 2;
+      if (numericValue.length === 2) {
+        const month = parseInt(numericValue, 10);
+        if (month < 1 || month > 12) valid = false;
+      }
+    } 
+    else if (field.includes('Day')) {
+      maxLength = 2;
+      if (numericValue.length === 2) {
+        const day = parseInt(numericValue, 10);
+        if (day < 1 || day > 31) valid = false;
+      }
+    }
+
+    if (!valid) return; //Don't update state if invalid input
 
     setDateRange(prev => ({
       ...prev,
@@ -61,7 +80,10 @@ export default function ScheduleSection() {
 
     //saves weekly availability to database
     const { error: availErr } = await saveWeeklyAvailability(userId, availability);
-    if (availErr) return alert("Error saving weekly availability");
+    if (availErr) {
+      console.error(availErr);
+      return alert('Error saving weekly availability');
+    }
 
     //saves date exception to database
     const startDate = `20${dateRange.startYear}-${dateRange.startMonth}-${dateRange.startDay}`;
@@ -92,6 +114,7 @@ export default function ScheduleSection() {
       <div className="mb-8"> {/* Removed white bg and shadow */}
         <h2 className="text-xl font-bold mb-3 text-gray-800">Open & Block specific dates</h2>
         
+        {/* Start Date & End Date Input Boxes */}
         <div className="flex items-center gap-x-2 mb-3 flex-wrap">
           {dateInputFields.map(field => (
             <input
@@ -117,6 +140,7 @@ export default function ScheduleSection() {
             />
           ))}
         
+        {/* Open & Block Buttons */}
           <button
             onClick={() => setBlockType('Open')}
             className={`ml-auto px-5 py-2 h-10 rounded text-sm font-semibold transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 ${
