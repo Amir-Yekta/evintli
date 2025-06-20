@@ -11,7 +11,7 @@ export async function saveWeeklyAvailability(
   const rows = Object.entries(availability).map(([day, status]) => ({
     user_id: userId || "df64e4c5-5379-430b-b91f-c63f1dde6eec",  //HARDCODED FOR TESTING
     day,          // Sunday .. Saturday
-    status: status === "Available" //BOOLEAN : 'Available' = true | 'Busy' = false
+    status: status === "Available" //BOOLEAN: 'Available' = true | 'Busy' = false
   }));
 
   // upsert all rows in one call
@@ -30,13 +30,46 @@ export async function addDateException(
   type: "Open" | "Block"
 ) {
   const { error } = await supabase
-    .from("date_exceptions")
-    .insert({
-      user_id:    userId || "df64e4c5-5379-430b-b91f-c63f1dde6eec", //HARDCODED FOR TESTING
-      start_date: startDate,
-      end_date:   endDate,
-      type: type === "Open" //BOOLEAN: 'Open' = true | 'Block' = false
-    });
+  .from("date_exceptions")
+  .upsert({
+    user_id: userId || "df64e4c5-5379-430b-b91f-c63f1dde6eec",  //HARDCODED FOR TESTING
+    start_date: startDate,
+    end_date: endDate,
+    type,
+  }, 
 
+  { onConflict: 'user_id, start_date, end_date' });
+
+  return { error };
+}
+
+
+//Get weekly availability for a user
+export async function getWeeklyAvailability(userId: string) {
+  const { data, error } = await supabase
+    .from('weekly_availability')
+    .select('day, status')
+    .eq('user_id', userId);
+
+  return { data, error };
+}
+
+//Get date exceptions for a user
+export async function getDateExceptions(userId: string) {
+  const { data, error } = await supabase
+    .from('date_exceptions')
+    .select('start_date, end_date, type')
+    .eq('user_id', userId)
+    .order('start_date', { ascending: false }); // optional: newest first
+
+  return { data, error };
+}
+
+//deletes users date exception
+export async function deleteDateException(userId: string, startDate: string, endDate: string) {
+  const { error } = await supabase
+    .from("date_exceptions")
+    .delete()
+    .match({ user_id: userId, start_date: startDate, end_date: endDate });
   return { error };
 }
