@@ -39,7 +39,6 @@ export default function ScheduleSection() {
   });
 
 
-
   const [blockType, setBlockType] = useState('Open'); // 'Open' or 'Block' | default to 'Open'
   const [exceptions, setExceptions] = useState([]);
 
@@ -186,19 +185,6 @@ const handleSubmit = async () => {
   alert('Schedule updated successfully!');
 };
 
-
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const dateInputFields = [
-    { placeholder: 'YY', name: 'startYear', value: dateRange.startYear },
-    { placeholder: 'MM', name: 'startMonth', value: dateRange.startMonth },
-    { placeholder: 'DD', name: 'startDay', value: dateRange.startDay },
-  ];
-  const dateInputFieldsEnd = [
-    { placeholder: 'YY', name: 'endYear', value: dateRange.endYear },
-    { placeholder: 'MM', name: 'endMonth', value: dateRange.endMonth },
-    { placeholder: 'DD', name: 'endDay', value: dateRange.endDay },
-  ];
-
   //Fetch existing schedule data on mount
   useEffect(() => {
   const fetchScheduleData = async () => {
@@ -224,6 +210,18 @@ const handleSubmit = async () => {
 
     fetchScheduleData();
   }, [session]);
+
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dateInputFields = [
+    { placeholder: 'YY', name: 'startYear', value: dateRange.startYear },
+    { placeholder: 'MM', name: 'startMonth', value: dateRange.startMonth },
+    { placeholder: 'DD', name: 'startDay', value: dateRange.startDay },
+  ];
+  const dateInputFieldsEnd = [
+    { placeholder: 'YY', name: 'endYear', value: dateRange.endYear },
+    { placeholder: 'MM', name: 'endMonth', value: dateRange.endMonth },
+    { placeholder: 'DD', name: 'endDay', value: dateRange.endDay },
+  ];
 
 
   return (
