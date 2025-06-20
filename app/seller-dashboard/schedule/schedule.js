@@ -227,7 +227,8 @@ export default function ScheduleSection() {
               maxLength={2}
               className={`w-16 h-10 px-2 py-2 bg-white border rounded text-center text-sm
                 focus:outline-none transition-colors duration-150
-                ${errors[f.name]
+                ${
+                  errors[f.name] || errors.dateLogic
                   ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-blue-500'}`}
             />
@@ -253,9 +254,11 @@ export default function ScheduleSection() {
               maxLength={2}
               className={`w-16 h-10 px-2 py-2 bg-white border rounded text-center text-sm
                 focus:outline-none transition-colors duration-150
-                ${errors[f.name]
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'}`}
+                ${
+                  errors[f.name] || errors.dateLogic
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-blue-500'
+                }`}
             />
             {errors[f.name] && (
               <p className="absolute left-1/2 -translate-x-1/2 top-full mt-1 text-red-500 text-xs whitespace-nowrap">
@@ -267,7 +270,7 @@ export default function ScheduleSection() {
 
         {/* Date logic error (startDate > endDate) */}
         {errors.dateLogic && (
-          <p className="w-full text-center text-red-500 text-xs mt-2">
+          <p className="absolute left-0 right-120 text-center text-red-500 text-xs mt-15">
             {errors.dateLogic}
           </p>
         )}
