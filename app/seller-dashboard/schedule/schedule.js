@@ -34,10 +34,10 @@ export default function ScheduleSection() {
   });
 
   const [errors, setErrors] = useState({
-    startYear: '', startMonth: '', startDay: '',
-    endYear: '', endMonth: '', endDay: '',
+    dateFormat: '',
     dateLogic: ''
   });
+
 
 
   const [blockType, setBlockType] = useState('Open'); // 'Open' or 'Block' | default to 'Open'
@@ -70,8 +70,7 @@ export default function ScheduleSection() {
       }
     }
 
-    //if (!valid) return; //Don't update state if invalid input
-
+  //Don't update state if invalid input
     if (!valid) {
       setErrors(prev => ({ ...prev, [field]: 'Invalid format' }));
       return;
@@ -113,60 +112,80 @@ export default function ScheduleSection() {
     }));
   };
 
-  const handleSubmit = async () => {
-    console.log('Date Range:', dateRange);
-    console.log('Availability:', availability);
-    console.log('Block Type:', blockType);
-    
-    const userId = session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec"; //HARDCODED USER ID
-    const newErrors = { ...errors };
+const handleSubmit = async () => {
+  console.log('Date Range:', dateRange);
+  console.log('Availability:', availability);
+  console.log('Block Type:', blockType);
 
-    // Validate if all fields are filled
+  const userId = session?.user?.id || "df64e4c5-5379-430b-b91f-c63f1dde6eec"; //HARDCODED USER ID
+  const newErrors = { ...errors };
+
+  // Check if all date fields are empty
+  const allDateFieldsEmpty = Object.values(dateRange).every(val => val === '');
+  let hasError = false;
+
+  if (!allDateFieldsEmpty) {
+    // Validate if all fields are filled (must be 2 digits)
     const fields = ['startYear', 'startMonth', 'startDay', 'endYear', 'endMonth', 'endDay'];
-      let hasError = false;
-      fields.forEach(field => {
-        if (!dateRange[field] || dateRange[field].length !== 2) {
-          newErrors[field] = 'Required and must be 2 digits';
-          hasError = true;
-        } else {
-          newErrors[field] = '';
-        }
-      });
-
-    //saves weekly availability to database
-    const { error: availErr } = await saveWeeklyAvailability(userId, availability);
-    if (availErr) {
-      console.error(availErr);
-      return alert('Error saving weekly availability');
-    }
-
-    //saves date exception to database
-    const startDate = `20${dateRange.startYear}-${dateRange.startMonth}-${dateRange.startDay}`;
-    const endDate   = `20${dateRange.endYear}-${dateRange.endMonth}-${dateRange.endDay}`;
-
-    //Error handling to make sure startDate < endDate
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    if (start > end) {
-      newErrors.dateLogic = 'Start date must be earlier than end date';
+    const invalidFields = fields.filter(field => !dateRange[field] || dateRange[field].length !== 2);
+    if (invalidFields.length > 0) {
+      newErrors.dateFormat = 'Each field must be 2 digits';
       hasError = true;
-    } 
-    else {
-      newErrors.dateLogic = '';
+    } else {
+      newErrors.dateFormat = '';
     }
-    setErrors(newErrors);
-    if (hasError) return;
+
+    // Only check date logic if no individual field errors
+    if (!hasError) {
+      const startDate = `20${dateRange.startYear}-${dateRange.startMonth}-${dateRange.startDay}`;
+      const endDate = `20${dateRange.endYear}-${dateRange.endMonth}-${dateRange.endDay}`;
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (start > end) {
+        newErrors.dateLogic = 'Start date must be earlier than end date';
+        hasError = true;
+      } 
+      else {
+        newErrors.dateLogic = '';
+      }
+    }
+  } 
+  else {
+    // Clear date errors if all fields empty
+    Object.keys(newErrors).forEach(key => {
+      newErrors[key] = '';
+    });
+  }
+
+  setErrors(newErrors);
+
+  if (hasError) return;
+
+  // Save weekly availability no matter what
+  const { error: availErr } = await saveWeeklyAvailability(userId, availability);
+  if (availErr) {
+    console.error(availErr);
+    return alert('Error saving weekly availability');
+  }
+
+  if (!allDateFieldsEmpty) {
+    // Only save date exception if fields are filled
+    const startDate = `20${dateRange.startYear}-${dateRange.startMonth}-${dateRange.startDay}`;
+    const endDate = `20${dateRange.endYear}-${dateRange.endMonth}-${dateRange.endDay}`;
 
     const { error: dateErr } = await addDateException(userId, startDate, endDate, blockType);
     if (dateErr) return alert("Error saving date range");
 
-    //re-fetch exceptions after adding new one
+    // Re-fetch exceptions after adding new one
     const { data: updatedExceptions, error: fetchErr } = await getDateExceptions(userId);
     if (updatedExceptions) setExceptions(updatedExceptions);
+  }
 
-      alert('Schedule updated successfully!');
-  };
+  alert('Schedule updated successfully!');
+};
+
 
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const dateInputFields = [
@@ -227,16 +246,11 @@ export default function ScheduleSection() {
               maxLength={2}
               className={`w-16 h-10 px-2 py-2 bg-white border rounded text-center text-sm
                 focus:outline-none transition-colors duration-150
-                ${
-                  errors[f.name] || errors.dateLogic
+                ${dateRange[f.name].length !== 2 && errors.dateFormat
                   ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'}`}
+                  : 'border-gray-300 focus:ring-blue-500'
+                }`}
             />
-            {errors[f.name] && (
-              <p className="absolute left-1/2 -translate-x-1/2 top-full mt-1 text-red-500 text-xs whitespace-nowrap">
-                {errors[f.name]}
-              </p>
-            )}
           </div>
         ))}
 
@@ -254,24 +268,25 @@ export default function ScheduleSection() {
               maxLength={2}
               className={`w-16 h-10 px-2 py-2 bg-white border rounded text-center text-sm
                 focus:outline-none transition-colors duration-150
-                ${
-                  errors[f.name] || errors.dateLogic
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-blue-500'
+                ${dateRange[f.name].length !== 2 && errors.dateFormat
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-blue-500'
                 }`}
             />
-            {errors[f.name] && (
-              <p className="absolute left-1/2 -translate-x-1/2 top-full mt-1 text-red-500 text-xs whitespace-nowrap">
-                {errors[f.name]}
-              </p>
-            )}
           </div>
         ))}
 
-        {/* Date logic error (startDate > endDate) */}
+        {/* Date logic error (startDate < endDate) */}
         {errors.dateLogic && (
           <p className="absolute left-0 right-120 text-center text-red-500 text-xs mt-15">
             {errors.dateLogic}
+          </p>
+        )}
+
+        {/* Date logic error (highlight boxes with incorrect format) */}
+        {errors.dateFormat && (
+          <p className="absolute left-0 right-139 text-center text-red-500 text-xs mt-15">
+            {errors.dateFormat}
           </p>
         )}
 
